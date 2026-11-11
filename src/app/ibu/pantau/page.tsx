@@ -1,11 +1,14 @@
 "use client";
 
-import { Check, CircleAlert, PartyPopper } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useMemo, useState } from "react";
+import { Fragment, Suspense, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { GambarKia } from "@/components/gambar-kia";
+import { Ilustrasi } from "@/components/ilustrasi";
 import { KepalaHalaman } from "@/components/kepala";
-import { Kartu, Lencana, Memuat, Tab, TautanBuku, Tombol } from "@/components/ui";
+import { Memuat, Tab, TautanBuku, Tombol } from "@/components/ui";
+import type { NamaGambar } from "@/data/gambar-kia";
 import { cetakKePdf, kamus, levelDariPeringatanYa } from "@/lib/kamus";
 import { useRingkasan } from "@/lib/hooks";
 import { usePengguna, useStore } from "@/lib/store";
@@ -18,6 +21,50 @@ const KONFIG: Record<Lembar, { tabel: string; kunci: "minggu_kehamilan" | "hari_
   nifas: { tabel: "pemantauan_nifas", kunci: "hari_ke", satuan: "Hari", layanan: ["periksa_nifas", "vit_a", "ttd", "gizi_cukup"], hlm: 28, maks: 42 },
   bayi: { tabel: "pemantauan_bayi", kunci: "hari_ke", satuan: "Hari", layanan: [], hlm: 42, maks: 28 },
 };
+
+/** Gambar tiap kolom, dipotong dari lembar pemantauan Buku KIA (hlm. 10–11, 28–31, 42–45). */
+const GAMBAR: Record<string, NamaGambar> = {
+  periksa_kehamilan: "ph-periksa",
+  kelas_ibu_hamil: "ph-kelas",
+  demam_2hari: "ph-demam",
+  pusing_berat: "ph-pusing",
+  sulit_tidur_cemas: "ph-sulit-tidur",
+  risiko_tb: "ph-tb",
+  gerak_bayi_kurang: "ph-gerak",
+  nyeri_perut_hebat: "ph-nyeri-perut",
+  sakit_kencing: "ph-kencing",
+  diare_berulang: "ph-diare",
+  periksa_nifas: "pn-periksa",
+  vit_a: "pn-vit-a",
+  ttd: "pn-ttd",
+  gizi_cukup: "pn-gizi",
+  masalah_jiwa: "pn-jiwa",
+  demam_38: "pn-demam",
+  sakit_kepala: "pn-sakit-kepala",
+  pandangan_kabur: "pn-pandangan",
+  nyeri_ulu_hati: "pn-ulu-hati",
+  jantung_berdebar: "pn-berdebar",
+  napas_pendek: "pn-napas",
+  payudara_bermasalah: "pn-payudara",
+  gangguan_bak: "pn-bak",
+  kelamin_bermasalah: "pn-kelamin",
+  darah_nifas_berbau: "pn-darah-berbau",
+  perdarahan_banyak: "pn-perdarahan",
+  keputihan: "pn-keputihan",
+  sesak_napas: "pb-sesak",
+  lemah: "pb-lemah",
+  kulit_biru: "pb-kulit-biru",
+  hisapan_lemah: "pb-hisapan",
+  kejang: "pb-kejang",
+  suhu_abnormal: "pb-suhu",
+  bab_bermasalah: "pb-bab",
+  kencing_sedikit: "pb-kencing",
+  tali_pusat_infeksi: "pb-tali-pusat",
+  mata_bernanah: "pb-mata",
+  kulit_bintil: "pb-bintil",
+  belum_hb0_bcg: "pb-imunisasi",
+};
+const gambarKolom = (lembar: Lembar, kolom: string): NamaGambar | undefined => (kolom === "cairan_jalan_lahir" ? (lembar === "hamil" ? "ph-cairan" : "pn-cairan") : GAMBAR[kolom]);
 
 export default function HalamanPantau() {
   return (
@@ -124,27 +171,30 @@ function FormLembar({ lembar, ibuId, sekarang, catatan }: { lembar: Lembar; ibuI
       </div>
 
       {layanan.length > 0 && (
-        <Kartu className="space-y-2 p-4">
-          <p className="text-xs font-bold uppercase tracking-wider text-muted">Pelayanan kesehatan (centang bila sudah)</p>
-          {layanan.map(([kk, kol]) => (
-            <Centang key={kk} label={kol.label} nilai={nilai[kk] === true} ubah={(v) => setNilai((s) => ({ ...s, [kk]: v }))} />
-          ))}
-        </Kartu>
+        <section>
+          <h2 className="text-[17px] font-bold">Pelayanan kesehatan</h2>
+          <p className="mt-0.5 text-sm text-muted">Ketuk yang sudah Ibu dapat {lembar === "hamil" ? "minggu" : "hari"} ini.</p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            {layanan.map(([kk, kol]) => (
+              <KartuGambar key={kk} label={kol.label} gambar={gambarKolom(lembar, kk)} nilai={nilai[kk] === true} ubah={(v) => setNilai((s) => ({ ...s, [kk]: v }))} />
+            ))}
+          </div>
+        </section>
       )}
 
-      <Kartu className="space-y-2 p-4">
-        <p className="text-xs font-bold uppercase tracking-wider text-muted">
-          {lembar === "bayi" ? "Cek kondisi bayi hari ini" : lembar === "nifas" ? "Cek kondisi Ibu hari ini" : "Cek kondisi Ibu minggu ini"}
-        </p>
-        <p className="text-xs text-muted">Centang jika mengalami. Bila ada yang dicentang, segera periksa ke Puskesmas.</p>
-        {gejala.map(([kk, kol]) => {
-          const lv = levelDariPeringatanYa(kol);
-          return <Centang key={kk} label={kol.label} nilai={nilai[kk] === true} ubah={(v) => setNilai((s) => ({ ...s, [kk]: v }))} level={kk === "gerak_bayi_kurang" && periode < 24 ? "kuning" : lv} gejala />;
-        })}
-      </Kartu>
+      <section>
+        <h2 className="text-[17px] font-bold">{lembar === "bayi" ? "Kondisi bayi hari ini" : lembar === "nifas" ? "Kondisi Ibu hari ini" : "Kondisi Ibu minggu ini"}</h2>
+        <p className="mt-0.5 text-sm text-muted">Ketuk gambar yang {lembar === "bayi" ? "terjadi pada bayi" : "Ibu alami"}. Bila ada, segera periksa ke Puskesmas.</p>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          {gejala.map(([kk, kol]) => {
+            const lv = kk === "gerak_bayi_kurang" && periode < 24 ? "kuning" : levelDariPeringatanYa(kol);
+            return <KartuGambar key={kk} label={kol.label} gambar={gambarKolom(lembar, kk)} nilai={nilai[kk] === true} ubah={(v) => setNilai((s) => ({ ...s, [kk]: v }))} level={lv === "merah" ? "merah" : "kuning"} />;
+          })}
+        </div>
+      </section>
 
       {hasil && (
-        <div className={cn("rounded-2xl p-4", hasil.merah.length ? "bg-merah-soft" : hasil.kuning.length ? "bg-kuning-soft" : "bg-hijau-soft")}>
+        <div className={cn("rounded-2xl p-4", hasil.merah.length ? "bg-merah-soft" : hasil.kuning.length ? "bg-kuning-soft" : "bg-teal-soft")}>
           {hasil.merah.length || hasil.kuning.length ? (
             <>
               <p className={cn("flex items-center gap-2 font-bold", hasil.merah.length ? "text-merah" : "text-kuning")}>
@@ -153,15 +203,19 @@ function FormLembar({ lembar, ibuId, sekarang, catatan }: { lembar: Lembar; ibuI
               <p className="mt-1 text-sm">Kader dan bidan Ibu sudah diberi tahu lewat MOMCARE. {hasil.merah.length ? "Bila perdarahan, kejang, atau sesak, langsung ke fasilitas kesehatan terdekat." : ""}</p>
             </>
           ) : (
-            <p className="flex items-center gap-2 font-bold text-hijau">
-              <PartyPopper className="size-5" /> Terima kasih, Bu! Tidak ada keluhan yang dicentang.
-            </p>
+            <div className="flex items-center gap-3">
+              <Ilustrasi nama="tanaman" tanpaLatar className="size-12 shrink-0" />
+              <p className="text-sm">
+                <b className="block text-[15px] text-teal">Terima kasih, Bu.</b>
+                Tidak ada keluhan {lembar === "hamil" ? "minggu" : "hari"} ini.
+              </p>
+            </div>
           )}
         </div>
       )}
 
       <div className="flex items-center justify-between gap-3">
-        <TautanBuku halaman={k.hlm} label={`Lembar di Buku KIA hlm. ${k.hlm}–${k.hlm + 3}`} />
+        <TautanBuku halaman={k.hlm} label={`Lembar asli di Buku KIA hlm. ${k.hlm}–${k.hlm + 3}`} />
         <span className="text-[11px] text-muted">PDF hlm. {cetakKePdf(k.hlm)}</span>
       </div>
       <Tombol className="w-full" onClick={kirim}>
@@ -173,27 +227,38 @@ function FormLembar({ lembar, ibuId, sekarang, catatan }: { lembar: Lembar; ibuI
   );
 }
 
-function Centang({ label, nilai, ubah, level, gejala }: { label: string; nilai: boolean; ubah: (v: boolean) => void; level?: "merah" | "kuning" | null; gejala?: boolean }) {
+/** Kartu bergambar seperti kolom lembar pemantauan. Diketuk untuk menandai, tanpa kotak centang. */
+function KartuGambar({ label, gambar, nilai, ubah, level }: { label: string; gambar?: NamaGambar; nilai: boolean; ubah: (v: boolean) => void; level?: "merah" | "kuning" }) {
+  const gaya = !nilai
+    ? null
+    : !level
+      ? { cincin: "ring-hijau", latar: "bg-hijau-soft", pita: "bg-hijau", teks: "Sudah" }
+      : level === "merah"
+        ? { cincin: "ring-merah", latar: "bg-merah-soft", pita: "bg-merah", teks: "Dialami" }
+        : { cincin: "ring-kuning", latar: "bg-kuning-soft", pita: "bg-kuning", teks: "Dialami" };
   return (
     <button
       type="button"
       onClick={() => ubah(!nilai)}
       aria-pressed={nilai}
-      className={cn(
-        "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition",
-        nilai ? (gejala ? (level === "merah" ? "border-merah/40 bg-merah-soft" : "border-kuning/40 bg-kuning-soft") : "border-hijau/40 bg-hijau-soft") : "border-line bg-surface hover:bg-bg",
-      )}
+      className={cn("relative flex flex-col overflow-hidden rounded-2xl text-left transition active:scale-[0.98]", gaya ? cn("ring-[2.5px]", gaya.cincin, gaya.latar) : "bg-surface shadow-[var(--shadow-kartu)]")}
     >
-      <span
-        className={cn(
-          "grid size-6 shrink-0 place-items-center rounded-lg border-2 transition",
-          nilai ? (gejala ? (level === "merah" ? "border-merah bg-merah text-white" : "border-kuning bg-kuning text-white") : "border-hijau bg-hijau text-white") : "border-line",
-        )}
-      >
-        {nilai && <Check className="size-4" strokeWidth={3} />}
+      <span className="relative block aspect-[4/3] overflow-hidden bg-white">
+        {gambar && <GambarKia nama={gambar} alt="" sizes="45vw" className="h-full w-full object-cover object-top" />}
       </span>
-      <span className="flex-1 text-sm font-medium">{label}</span>
-      {gejala && level === "merah" && <Lencana warna="merah">Bahaya</Lencana>}
+      <span className="block px-3 pb-3 pt-2 text-[13.5px] font-medium leading-snug [overflow-wrap:anywhere]">
+        {label.split("/").map((b, i) => (
+          <Fragment key={i}>
+            {i > 0 && (
+              <>
+                /<wbr />
+              </>
+            )}
+            {b}
+          </Fragment>
+        ))}
+      </span>
+      {gaya && <span className={cn("absolute left-2 top-2 rounded-full px-2.5 py-0.5 text-xs font-bold text-white shadow-sm", gaya.pita)}>{gaya.teks}</span>}
     </button>
   );
 }
@@ -203,8 +268,9 @@ function Riwayat({ lembar, catatan, gejala }: { lembar: Lembar; catatan: { data:
   const kolom = catatan.map((c) => Number(c.data[k.kunci])).sort((a, b) => a - b).slice(-8);
   if (!kolom.length) return null;
   return (
-    <Kartu className="overflow-x-auto p-4">
-      <p className="mb-3 text-xs font-bold uppercase tracking-wider text-muted">Riwayat (seperti lembar di buku)</p>
+    <section className="overflow-x-auto rounded-2xl bg-surface p-4 shadow-[var(--shadow-kartu)]">
+      <p className="text-[15px] font-bold">Riwayat {k.satuan.toLowerCase()} sebelumnya</p>
+      <p className="mb-3 text-xs text-muted">Titik merah berarti keluhan yang Ibu tandai.</p>
       <table className="w-full text-xs">
         <thead>
           <tr>
@@ -226,7 +292,7 @@ function Riwayat({ lembar, catatan, gejala }: { lembar: Lembar; catatan: { data:
                 const c = catatan.find((x) => Number(x.data[k.kunci]) === p);
                 return (
                   <td key={p} className="text-center">
-                    {c?.data[kk] === true ? <span className="inline-block size-4 rounded bg-merah text-[10px] leading-4 text-white">✓</span> : <span className="text-line">·</span>}
+                    {c?.data[kk] === true ? <span className="inline-block size-2.5 rounded-full bg-merah" /> : <span className="inline-block size-1 rounded-full bg-line" />}
                   </td>
                 );
               })}
@@ -234,6 +300,6 @@ function Riwayat({ lembar, catatan, gejala }: { lembar: Lembar; catatan: { data:
           ))}
         </tbody>
       </table>
-    </Kartu>
+    </section>
   );
 }
