@@ -7,9 +7,9 @@ import { kamus } from "@/lib/kamus";
 import { tampil, tampilWaktu } from "@/lib/tanggal";
 import type { Catatan } from "@/lib/types";
 import { TampilCatatan } from "./kamus-form";
-import { Lencana, TautanBuku } from "./ui";
+import { TautanBuku } from "./ui";
 
-function judulCatatan(c: Catatan): string {
+export function judulCatatan(c: Catatan): string {
   const d = c.data;
   switch (c.tabel) {
     case "anc":
@@ -42,22 +42,19 @@ export function RiwayatTabel({ tabel, catatan, hrefUbah }: { tabel: string; cata
     <section className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-bold">{def.judul}</h3>
-        {hlmCetak && hlmCetak > 0 && <TautanBuku halaman={hlmCetak} label={`hlm. ${hlmCetak}`} />}
+        {hlmCetak && hlmCetak > 0 && <TautanBuku halaman={hlmCetak} label={`hlm. ${hlmCetak}`} className="shrink-0 whitespace-nowrap" />}
       </div>
+      <div className="divide-y divide-line overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-kartu)]">
       {[...catatan].reverse().map((c) => {
         const ubah = hrefUbah?.(c);
         return (
-          <details key={c.id} className="group rounded-2xl border border-line bg-surface">
+          <details key={c.id} className="group">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3">
               <span className="flex-1 text-sm font-semibold">{judulCatatan(c)}</span>
-              {c.meta.sumber === "foto (OCR)" && (
-                <Lencana warna="brand">
-                  <ScanLine className="size-3" /> foto
-                </Lencana>
-              )}
+              {c.meta.sumber === "foto (OCR)" && <ScanLine className="size-4 text-brand" aria-label="Dari foto Buku KIA" />}
               <ChevronDown className="size-4 text-muted transition group-open:rotate-180" />
             </summary>
-            <div className="border-t border-line px-4 pb-4 pt-2">
+            <div className="border-t border-dashed border-line bg-bg/40 px-4 pb-4 pt-2">
               <TampilCatatan tabel={tabel} data={c.data} />
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted">
                 <span>
@@ -75,6 +72,7 @@ export function RiwayatTabel({ tabel, catatan, hrefUbah }: { tabel: string; cata
           </details>
         );
       })}
+      </div>
     </section>
   );
 }
