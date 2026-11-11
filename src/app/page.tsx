@@ -1,23 +1,22 @@
-import { ArrowRight, BellRing, BookOpenCheck, Camera, HeartHandshake, ShieldCheck, Stethoscope, Users } from "lucide-react";
+import { ArrowRight, BookOpenCheck, Stethoscope } from "lucide-react";
 import Link from "next/link";
+import { GambarKia } from "@/components/gambar-kia";
+import { Ilustrasi, type NamaIlustrasi } from "@/components/ilustrasi";
 import { Logo } from "@/components/logo";
 import { ringkasKamus } from "@/lib/kamus";
 
-const ALUR = [
-  { ikon: Users, judul: "Kader mendaftarkan ibu", teks: "Dengan persetujuan ibu. NIK disimpan sebagai hash, kader hanya melihat ibu di wilayah posyandunya." },
-  { ikon: Camera, judul: "Foto tabel Buku KIA", teks: "AI membaca tabel pemeriksaan; angka yang ragu ditandai kuning dan wajib dikonfirmasi sebelum tersimpan." },
-  { ikon: BellRing, judul: "Peringatan Merah/Kuning/Hijau", teks: "Aturan dari Buku KIA: tekanan darah, LiLA, tanda bahaya, kunjungan terlambat. Bidan diberi tahu hari itu juga." },
-  { ikon: HeartHandshake, judul: "Ibu & keluarga diingatkan", teks: "Ibu mengisi lembar pemantauan di HP; suami ikut menerima pengingat jadwal periksa lewat WhatsApp." },
+const ALUR: { ikon: NamaIlustrasi; judul: string; teks: string }[] = [
+  { ikon: "keluarga", judul: "Kader mendaftarkan ibu", teks: "Dengan persetujuan ibu. NIK disimpan sebagai hash, kader hanya melihat ibu di wilayah posyandunya." },
+  { ikon: "bukuKia", judul: "Foto tabel Buku KIA", teks: "AI membaca tabel pemeriksaan; angka yang ragu ditandai kuning dan wajib dikonfirmasi sebelum tersimpan." },
+  { ikon: "bahaya", judul: "Peringatan Merah/Kuning/Hijau", teks: "Aturan dari Buku KIA: tekanan darah, LiLA, tanda bahaya, kunjungan terlambat. Bidan diberi tahu hari itu juga." },
+  { ikon: "lonceng", judul: "Ibu & keluarga diingatkan", teks: "Ibu mengisi lembar pemantauan di HP; suami ikut menerima pengingat jadwal periksa lewat WhatsApp." },
 ];
 
 export default function Beranda() {
   const k = ringkasKamus();
   return (
     <main className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px]">
-        <div className="aurora-blob absolute -left-24 top-10 size-[420px] rounded-full bg-[#c9b6ff]/60" />
-        <div className="aurora-blob absolute right-0 top-0 size-[380px] rounded-full bg-[#ffc2d4]/60 [animation-delay:-7s]" />
-      </div>
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[620px] bg-[#eef5fe]" />
 
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <Logo />
@@ -29,11 +28,9 @@ export default function Beranda() {
       <section className="mx-auto max-w-6xl px-5 pb-16 pt-8 md:pt-16">
         <div className="grid items-center gap-12 md:grid-cols-[1.15fr_1fr]">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-white/70 px-3 py-1 text-xs font-semibold text-brand-ink backdrop-blur">
-              <ShieldCheck className="size-3.5" /> Inclusive Health &amp; Well-being · Logicodix 2026
-            </p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand">Inclusive Health &amp; Well-being · Logicodix 2026</p>
             <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight text-ink md:text-6xl">
-              Buku KIA yang tidak berhenti <span className="bg-gradient-to-r from-brand to-rose bg-clip-text text-transparent">di kertas.</span>
+              Buku KIA yang tidak berhenti <span className="text-brand">di kertas.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted">
               MOMCARE memastikan tidak ada ibu hamil dan bayi baru lahir di wilayah kader yang terlewat: dari pemeriksaan kehamilan K1–K6, persalinan, nifas, sampai bayi 28 hari.
@@ -58,11 +55,14 @@ export default function Beranda() {
           </div>
 
           <div className="relative mx-auto w-full max-w-sm">
-            <div className="rounded-[2.2rem] border border-white/60 bg-white/70 p-3 shadow-2xl shadow-brand/20 backdrop-blur">
-              <div className="rounded-[1.7rem] bg-gradient-to-br from-[#6d3fd8] via-[#7b4ae0] to-[#e5537a] p-5 text-white">
-                <p className="text-sm text-white/80">Halo, Bu Siti 👋</p>
+            <div className="rounded-[2.2rem] bg-white p-3 shadow-[0_30px_60px_-30px_rgba(23,70,140,0.35)] ring-1 ring-line">
+              <div className="relative overflow-hidden rounded-[1.7rem] bg-brand p-5 text-white">
+                <span className="absolute right-4 top-4 grid size-16 place-items-center overflow-hidden rounded-full bg-white">
+                  <GambarKia nama="buah-pepaya" alt="" sizes="80px" className="h-full w-full scale-[1.4] object-cover" />
+                </span>
+                <p className="text-sm text-white/80">Halo, Bu Siti</p>
                 <p className="mt-1 text-2xl font-extrabold">Hamil 34 minggu</p>
-                <p className="text-sm text-white/85">Trimester 3 · sebesar pepaya 🥭</p>
+                <p className="text-sm text-white/85">Trimester 3 · sebesar pepaya</p>
                 <div className="mt-4 h-2 rounded-full bg-white/25">
                   <div className="h-2 w-[85%] rounded-full bg-white" />
                 </div>
@@ -97,12 +97,10 @@ export default function Beranda() {
 
       <section className="border-y border-line bg-white/70">
         <div className="mx-auto grid max-w-6xl gap-6 px-5 py-14 md:grid-cols-4">
-          {ALUR.map(({ ikon: Ikon, judul, teks }, i) => (
+          {ALUR.map(({ ikon, judul, teks }, i) => (
             <div key={judul}>
               <div className="flex items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-xl bg-brand-soft text-brand">
-                  <Ikon className="size-5" />
-                </span>
+                <Ilustrasi nama={ikon} className="size-12" />
                 <span className="text-xs font-bold text-muted">0{i + 1}</span>
               </div>
               <h3 className="mt-3 font-bold">{judul}</h3>

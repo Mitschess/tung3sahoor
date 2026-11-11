@@ -64,12 +64,13 @@ export default function BerandaStaf() {
 
       <div className="grid grid-cols-3 gap-3">
         {[
-          { n: merah.length, label: "Merah", sub: "hubungi hari ini", c: "from-merah-soft to-white text-merah" },
-          { n: kuning.length, label: "Kuning", sub: "cek kunjungan terdekat", c: "from-kuning-soft to-white text-kuning" },
-          { n: hijau.length, label: "Hijau", sub: "sesuai jadwal", c: "from-hijau-soft to-white text-hijau" },
+          { n: merah.length, label: "Merah", sub: "hubungi hari ini", c: "text-merah", garis: "bg-merah" },
+          { n: kuning.length, label: "Kuning", sub: "cek kunjungan terdekat", c: "text-kuning", garis: "bg-kuning" },
+          { n: hijau.length, label: "Hijau", sub: "sesuai jadwal", c: "text-hijau", garis: "bg-hijau" },
         ].map((s, i) => (
-          <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className={cn("rounded-3xl border border-line bg-gradient-to-br p-4", s.c)}>
-            <p className="text-3xl font-extrabold md:text-4xl">{s.n}</p>
+          <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="relative overflow-hidden rounded-2xl bg-surface p-4 shadow-[var(--shadow-kartu)]">
+            <span className={cn("absolute inset-x-0 top-0 h-1", s.garis)} />
+            <p className={cn("text-3xl font-extrabold md:text-4xl", s.c)}>{s.n}</p>
             <p className="font-bold text-ink">{s.label}</p>
             <p className="hidden text-xs text-muted sm:block">{s.sub}</p>
           </motion.div>
