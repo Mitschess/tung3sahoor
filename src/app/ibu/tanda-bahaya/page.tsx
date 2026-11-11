@@ -2,6 +2,7 @@
 
 import { Phone, Siren } from "lucide-react";
 import { KepalaHalaman } from "@/components/kepala";
+import { KisiGambar } from "@/components/lembar-materi";
 import { ItemPeringatan } from "@/components/peringatan";
 import { JudulBagian, Kartu, Memuat, TautanBuku } from "@/components/ui";
 import { TANDA_BAHAYA, tandaBahayaUntuk } from "@/data/edukasi";
@@ -38,22 +39,30 @@ export default function TandaBahaya() {
         </section>
       )}
 
-      {daftar.map((t) => (
-        <Kartu key={t.judul}>
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <h2 className="font-bold">{t.judul}</h2>
-            <TautanBuku halaman={t.halaman} label={`hlm. ${t.halaman}`} />
-          </div>
-          <ul className="grid gap-2">
-            {t.butir.map((b) => (
-              <li key={b} className="flex gap-2 text-sm">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-merah" />
-                {b}
-              </li>
-            ))}
-          </ul>
-        </Kartu>
-      ))}
+      {daftar.map((t) => {
+        const bergambar = t.butir.filter((b) => b.gambar).map((b) => ({ gambar: b.gambar!, label: b.teks }));
+        const tanpaGambar = t.butir.filter((b) => !b.gambar);
+        return (
+          <Kartu key={t.judul}>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-lg font-bold">{t.judul}</h2>
+              <TautanBuku halaman={t.halaman} label={`hlm. ${t.halaman}`} />
+            </div>
+            <KisiGambar isi={bergambar} />
+            {tanpaGambar.length > 0 && (
+              <ul className="mt-3 grid gap-2">
+                {tanpaGambar.map((b) => (
+                  <li key={b.teks} className="flex gap-2 text-sm">
+                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-merah" />
+                    {b.teks}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Kartu>
+        );
+      })}
+      <p className="pb-2 text-center text-[11px] text-muted">Gambar: Buku KIA, Kementerian Kesehatan RI, 2024.</p>
     </div>
   );
 }
