@@ -29,6 +29,12 @@ interface State {
   draf: DrafOcr[];
   status: Record<string, StatusPeringatan>;
   pengingat: LogPengingat[];
+  /** Preferensi tampilan per perangkat: kartu "Status Kesehatan" yang disembunyikan ibu. */
+  statusTersembunyi: string[];
+  /** Ibu sudah menyetujui ringkasan syarat & privasi di perangkat ini. */
+  setujuPrivasi: boolean;
+  /** Lembar terjauh yang sudah dibaca per materi edukasi (indeks 0 = sampul), per perangkat. */
+  bacaan: Record<string, number>;
 
   masuk: (id: string) => void;
   keluar: () => void;
@@ -42,6 +48,9 @@ interface State {
   bukaLagiPeringatan: (id: string) => void;
   catatPengingat: (l: Omit<LogPengingat, "id" | "oleh" | "pada">) => void;
   resetDemo: () => void;
+  aturStatus: (tersembunyi: string[]) => void;
+  setujuiPrivasi: () => void;
+  catatBacaan: (slug: string, lembar: number) => void;
 }
 
 function saya(s: State): Pengguna {
@@ -85,6 +94,9 @@ export const useStore = create<State>()(
       draf: [],
       status: {},
       pengingat: [],
+      statusTersembunyi: [],
+      setujuPrivasi: false,
+      bacaan: {},
 
       masuk: (id) => set({ penggunaId: id }),
       keluar: () => set({ penggunaId: null }),
@@ -214,6 +226,13 @@ export const useStore = create<State>()(
         set({ pengingat: [{ ...l, id: uid("wa"), oleh: u.id, pada: new Date().toISOString() }, ...s.pengingat].slice(0, 200) });
       },
 
+      aturStatus: (tersembunyi) => set({ statusTersembunyi: tersembunyi }),
+      setujuiPrivasi: () => set({ setujuPrivasi: true }),
+      catatBacaan: (slug, lembar) => {
+        const lama = get().bacaan[slug] ?? -1;
+        if (lembar > lama) set({ bacaan: { ...get().bacaan, [slug]: lembar } });
+      },
+
       resetDemo: () => {
         const seed = buatSeed(new Date());
         set({ versi: VERSI_DATA, ibu: seed.ibu, catatan: seed.catatan, status: seed.status, draf: [], pengingat: [], pengguna: PENGGUNA_DEMO });
@@ -223,7 +242,18 @@ export const useStore = create<State>()(
       name: "momcare-demo",
       version: VERSI_DATA,
       storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({ versi: s.versi, penggunaId: s.penggunaId, ibu: s.ibu, catatan: s.catatan, draf: s.draf, status: s.status, pengingat: s.pengingat }),
+      partialize: (s) => ({
+        versi: s.versi,
+        penggunaId: s.penggunaId,
+        ibu: s.ibu,
+        catatan: s.catatan,
+        draf: s.draf,
+        status: s.status,
+        pengingat: s.pengingat,
+        statusTersembunyi: s.statusTersembunyi,
+        setujuPrivasi: s.setujuPrivasi,
+        bacaan: s.bacaan,
+      }),
       migrate: () => ({}) as unknown as State,
       onRehydrateStorage: () => () => {
         // Hidrasi localStorage berjalan sinkron di dalam create(), saat `useStore` belum terdefinisi:
