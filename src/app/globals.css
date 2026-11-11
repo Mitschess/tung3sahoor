@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --bg: #f7f5fb;
+  --surface: #ffffff;
+  --ink: #1d1530;
+  --muted: #6b6480;
+  --line: #e8e3f1;
+  --brand: #6d3fd8;
+  --brand-ink: #4c1fb3;
+  --brand-soft: #efe9fd;
+  --rose: #e5537a;
+  --rose-soft: #fde9ef;
+  --merah: #d92d3a;
+  --merah-soft: #fdecee;
+  --kuning: #b86e00;
+  --kuning-soft: #fff4dc;
+  --hijau: #0f8a5f;
+  --hijau-soft: #e3f6ee;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-rose: var(--rose);
+  --color-rose-soft: var(--rose-soft);
+  --color-merah: var(--merah);
+  --color-merah-soft: var(--merah-soft);
+  --color-kuning: var(--kuning);
+  --color-kuning-soft: var(--kuning-soft);
+  --color-hijau: var(--hijau);
+  --color-hijau-soft: var(--hijau-soft);
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --radius-card: 1.25rem;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+@keyframes aurora {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(6%, -4%, 0) scale(1.08); }
+  66% { transform: translate3d(-5%, 5%, 0) scale(0.96); }
+}
+.aurora-blob {
+  animation: aurora 18s ease-in-out infinite;
+  filter: blur(60px);
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--merah) 45%, transparent); }
+  70% { box-shadow: 0 0 0 10px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.pulse-merah {
+  animation: pulse-ring 2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob, .pulse-merah { animation: none; }
+}
