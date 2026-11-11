@@ -5,16 +5,18 @@ import { BookOpen, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
 import { urlHalamanCetak } from "@/lib/kamus";
+import { LogoMark } from "./logo";
 import { cn } from "@/lib/util";
 import type { Level } from "@/lib/types";
 
-type Varian = "utama" | "kedua" | "hantu" | "bahaya" | "garis";
+type Varian = "utama" | "kedua" | "hantu" | "bahaya" | "garis" | "garisBiru";
 const VARIAN: Record<Varian, string> = {
-  utama: "bg-brand text-white shadow-[0_6px_20px_-8px_var(--brand)] hover:bg-brand-ink",
-  kedua: "bg-brand-soft text-brand-ink hover:bg-[#e4dafc]",
+  utama: "bg-brand text-white hover:bg-brand-ink",
+  kedua: "bg-brand-soft text-brand-ink hover:bg-[#d6e8fd]",
   hantu: "text-ink hover:bg-black/5",
   bahaya: "bg-merah text-white hover:brightness-95",
   garis: "border border-line bg-surface text-ink hover:bg-bg",
+  garisBiru: "border border-brand bg-surface text-brand hover:bg-brand-soft/50",
 };
 
 export const Tombol = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { varian?: Varian; kecil?: boolean; memuat?: boolean }>(
@@ -24,8 +26,8 @@ export const Tombol = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLBut
         ref={ref}
         disabled={disabled || memuat}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50",
-          kecil ? "h-9 px-3.5 text-sm" : "h-11 px-5 text-[15px]",
+          "inline-flex items-center justify-center gap-2 font-semibold transition active:scale-[0.98] disabled:pointer-events-none disabled:bg-[#dfe4ea] disabled:text-[#9aa4b1] disabled:shadow-none",
+          kecil ? "h-9 rounded-lg px-3.5 text-sm" : "h-12 rounded-xl px-5 text-[15px]",
           VARIAN[varian],
           className,
         )}
@@ -43,8 +45,8 @@ export function TautanTombol({ href, varian = "utama", kecil, className, childre
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition active:scale-[0.98]",
-        kecil ? "h-9 px-3.5 text-sm" : "h-11 px-5 text-[15px]",
+        "inline-flex items-center justify-center gap-2 font-semibold transition active:scale-[0.98]",
+        kecil ? "h-9 rounded-lg px-3.5 text-sm" : "h-12 rounded-xl px-5 text-[15px]",
         VARIAN[varian],
         className,
       )}
@@ -56,7 +58,7 @@ export function TautanTombol({ href, varian = "utama", kecil, className, childre
 
 export function Kartu({ className, children, ...p }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-[0_1px_2px_rgba(29,21,48,0.04)]", className)} {...p}>
+    <div className={cn("rounded-2xl bg-surface p-5 shadow-[var(--shadow-kartu)]", className)} {...p}>
       {children}
     </div>
   );
@@ -102,7 +104,7 @@ export function Masukan({ className, ...p }: InputHTMLAttributes<HTMLInputElemen
   return (
     <input
       className={cn(
-        "h-11 w-full rounded-xl border border-line bg-surface px-3.5 text-[15px] text-ink outline-none transition placeholder:text-muted/70 focus:border-brand focus:ring-4 focus:ring-brand/10",
+        "h-12 w-full rounded-xl border border-line bg-surface px-4 text-[15px] text-ink outline-none transition placeholder:text-[#9aa4b1] focus:border-brand focus:ring-4 focus:ring-brand/10",
         className,
       )}
       {...p}
@@ -114,7 +116,7 @@ export function Pilihan({ className, children, ...p }: SelectHTMLAttributes<HTML
   return (
     <select
       className={cn(
-        "h-11 w-full appearance-none rounded-xl border border-line bg-surface bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b6480%22 stroke-width=%222.5%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-[length:14px] bg-[right_14px_center] bg-no-repeat px-3.5 pr-9 text-[15px] text-ink outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10",
+        "h-12 w-full appearance-none rounded-xl border border-line bg-surface bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7686%22 stroke-width=%222.5%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-[length:16px] bg-[right_16px_center] bg-no-repeat px-4 pr-10 text-[15px] text-ink outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10",
         className,
       )}
       {...p}
@@ -141,7 +143,7 @@ export function TautanBuku({ halaman, className, label }: { halaman: number; cla
 
 export function Kosong({ ikon, judul, teks, aksi }: { ikon?: ReactNode; judul: string; teks?: string; aksi?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-[var(--radius-card)] border border-dashed border-line bg-surface/60 px-6 py-10 text-center">
+    <div className="flex flex-col items-center gap-2 rounded-2xl bg-surface px-6 py-10 text-center shadow-[var(--shadow-kartu)]">
       {ikon && <div className="mb-1 text-muted">{ikon}</div>}
       <p className="font-semibold">{judul}</p>
       {teks && <p className="max-w-sm text-sm text-muted">{teks}</p>}
@@ -150,33 +152,53 @@ export function Kosong({ ikon, judul, teks, aksi }: { ikon?: ReactNode; judul: s
   );
 }
 
-export function Memuat() {
+/** Layar memuat bergaya splash: logo di tengah. */
+export function Memuat({ penuh }: { penuh?: boolean }) {
   return (
-    <div className="flex min-h-[50dvh] items-center justify-center text-muted">
-      <Loader2 className="size-6 animate-spin" />
+    <div role="status" aria-label="Memuat" className={cn("flex items-center justify-center", penuh ? "min-h-dvh" : "min-h-[50dvh]")}>
+      <LogoMark className="size-14 animate-pulse" />
     </div>
   );
 }
 
-export function Modal({ buka, setBuka, judul, deskripsi, children, lebar = "max-w-lg" }: { buka: boolean; setBuka: (b: boolean) => void; judul: string; deskripsi?: string; children: ReactNode; lebar?: string }) {
+/** Sakelar hidup/mati (mis. atur kartu status kesehatan). */
+export function Sakelar({ nyala, ubah, label }: { nyala: boolean; ubah: (v: boolean) => void; label: string }) {
   return (
-    <Dialog.Root open={buka} onOpenChange={setBuka}>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={nyala}
+      aria-label={label}
+      onClick={() => ubah(!nyala)}
+      className={cn("relative h-7 w-12 shrink-0 rounded-full transition", nyala ? "bg-brand/40" : "bg-[#d5dbe3]")}
+    >
+      <span className={cn("absolute top-1/2 size-6 -translate-y-1/2 rounded-full shadow transition-all", nyala ? "left-[calc(100%-1.6rem)] bg-brand" : "left-0.5 bg-white")} />
+    </button>
+  );
+}
+
+export function Modal({ buka, setBuka, judul, deskripsi, children, lebar = "max-w-lg", tanpaTutup }: { buka: boolean; setBuka: (b: boolean) => void; judul: string; deskripsi?: string; children: ReactNode; lebar?: string; tanpaTutup?: boolean }) {
+  return (
+    <Dialog.Root open={buka} onOpenChange={(b) => (tanpaTutup && !b ? undefined : setBuka(b))}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-[2px] data-[state=open]:animate-in" />
         <Dialog.Content
           className={cn(
-            "fixed inset-x-0 bottom-0 z-50 max-h-[92dvh] overflow-y-auto rounded-t-3xl bg-surface p-5 shadow-2xl sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-3xl",
+            "fixed inset-x-0 bottom-0 z-50 max-h-[92dvh] overflow-y-auto rounded-t-[1.75rem] bg-surface p-6 shadow-2xl sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-3xl",
             lebar,
           )}
         >
+          <div className="mx-auto -mt-1 mb-4 h-1.5 w-12 rounded-full bg-line sm:hidden" aria-hidden />
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
               <Dialog.Title className="text-lg font-bold">{judul}</Dialog.Title>
               {deskripsi ? <Dialog.Description className="mt-0.5 text-sm text-muted">{deskripsi}</Dialog.Description> : <Dialog.Description className="sr-only">{judul}</Dialog.Description>}
             </div>
-            <Dialog.Close className="rounded-full p-1.5 text-muted hover:bg-black/5" aria-label="Tutup">
-              <X className="size-5" />
-            </Dialog.Close>
+            {!tanpaTutup && (
+              <Dialog.Close className="rounded-full p-1.5 text-muted hover:bg-black/5" aria-label="Tutup">
+                <X className="size-5" />
+              </Dialog.Close>
+            )}
           </div>
           {children}
         </Dialog.Content>

@@ -2,16 +2,20 @@
 
 :root {
   color-scheme: light;
-  --bg: #f7f5fb;
+  --bg: #f4f7fb;
   --surface: #ffffff;
-  --ink: #1d1530;
-  --muted: #6b6480;
-  --line: #e8e3f1;
-  --brand: #6d3fd8;
-  --brand-ink: #4c1fb3;
-  --brand-soft: #efe9fd;
-  --rose: #e5537a;
-  --rose-soft: #fde9ef;
+  --ink: #1f2a37;
+  --muted: #6b7686;
+  --line: #e6ebf2;
+  --brand: #2f8af5;
+  --brand-ink: #1765c7;
+  --brand-soft: #e8f2fe;
+  --rose: #e84d8a;
+  --rose-soft: #fde8f1;
+  --teal: #10a99a;
+  --teal-soft: #e0f6f3;
+  --ungu: #7c5cf0;
+  --ungu-soft: #efebfe;
   --merah: #d92d3a;
   --merah-soft: #fdecee;
   --kuning: #b86e00;
@@ -31,6 +35,10 @@
   --color-brand-soft: var(--brand-soft);
   --color-rose: var(--rose);
   --color-rose-soft: var(--rose-soft);
+  --color-teal: var(--teal);
+  --color-teal-soft: var(--teal-soft);
+  --color-ungu: var(--ungu);
+  --color-ungu-soft: var(--ungu-soft);
   --color-merah: var(--merah);
   --color-merah-soft: var(--merah-soft);
   --color-kuning: var(--kuning);
@@ -39,6 +47,7 @@
   --color-hijau-soft: var(--hijau-soft);
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --radius-card: 1.25rem;
+  --shadow-kartu: 0 2px 14px -6px rgb(23 60 110 / 0.14), 0 0 0 1px rgb(23 60 110 / 0.04);
 }
 
 html {
@@ -78,16 +87,6 @@ input[type="number"] {
   scrollbar-width: none;
 }
 
-@keyframes aurora {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  33% { transform: translate3d(6%, -4%, 0) scale(1.08); }
-  66% { transform: translate3d(-5%, 5%, 0) scale(0.96); }
-}
-.aurora-blob {
-  animation: aurora 18s ease-in-out infinite;
-  filter: blur(60px);
-}
-
 @keyframes pulse-ring {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--merah) 45%, transparent); }
   70% { box-shadow: 0 0 0 10px transparent; }
@@ -97,6 +96,21 @@ input[type="number"] {
   animation: pulse-ring 2s infinite;
 }
 
+/* Petunjuk "geser" di sampul flipbook edukasi. */
+@keyframes geser {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-7px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .aurora-blob, .pulse-merah { animation: none; }
+  .pulse-merah { animation: none; }
+  [class*="animate-[geser"] { animation: none; }
+}
+
+/* Latar aplikasi ibu: putih bersih dengan semburat biru lembut di bagian atas. */
+.latar-ibu {
+  background:
+    radial-gradient(120% 38rem at 0% -10%, #cfe3fd 0%, transparent 55%),
+    radial-gradient(90% 28rem at 100% -5%, #e6f0ff 0%, transparent 60%),
+    #f8fafd;
 }
