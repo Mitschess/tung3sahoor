@@ -36,17 +36,17 @@ export function GrafikBB({ r }: { r: Ringkasan }) {
       <div className="h-56 w-full">
         <ResponsiveContainer>
           <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
-            <CartesianGrid stroke="#ece7f5" vertical={false} />
-            <XAxis dataKey="minggu" type="number" domain={[0, 40]} ticks={[0, 8, 12, 16, 20, 24, 28, 32, 36, 40]} tick={{ fontSize: 11, fill: "#6b6480" }} tickLine={false} axisLine={false} />
-            <YAxis tick={{ fontSize: 11, fill: "#6b6480" }} tickLine={false} axisLine={false} unit=" kg" width={52} />
+            <CartesianGrid stroke="#edf1f6" vertical={false} />
+            <XAxis dataKey="minggu" type="number" domain={[0, 40]} ticks={[0, 8, 12, 16, 20, 24, 28, 32, 36, 40]} tick={{ fontSize: 11, fill: "#6b7686" }} tickLine={false} axisLine={false} />
+            <YAxis tick={{ fontSize: 11, fill: "#6b7686" }} tickLine={false} axisLine={false} unit=" kg" width={52} />
             <Tooltip
               formatter={(v, n) => (n === "rentang" && Array.isArray(v) ? [`${v[0]}–${v[1]} kg`, "Rentang anjuran"] : [`${v} kg`, "Kenaikan"])}
               labelFormatter={(l) => `Minggu ke-${l}`}
-              contentStyle={{ borderRadius: 12, border: "1px solid #e8e3f1", fontSize: 12 }}
+              contentStyle={{ borderRadius: 12, border: "1px solid #e6ebf2", fontSize: 12 }}
             />
-            <Area dataKey="rentang" stroke="none" fill="#6d3fd8" fillOpacity={0.12} isAnimationActive={false} />
-            <Line dataKey="naik" stroke="#6d3fd8" strokeWidth={2.5} connectNulls dot={{ r: 4, fill: "#6d3fd8", stroke: "#fff", strokeWidth: 2 }} isAnimationActive={false} />
-            <Scatter dataKey="naik" fill="#6d3fd8" />
+            <Area dataKey="rentang" stroke="none" fill="#2f8af5" fillOpacity={0.12} isAnimationActive={false} />
+            <Line dataKey="naik" stroke="#2f8af5" strokeWidth={2.5} connectNulls dot={{ r: 4, fill: "#2f8af5", stroke: "#fff", strokeWidth: 2 }} isAnimationActive={false} />
+            <Scatter dataKey="naik" fill="#2f8af5" />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -69,15 +69,15 @@ export function GrafikTfuDjj({ r }: { r: Ringkasan }) {
       </div>
       <div className="h-48 w-full">
         <ResponsiveContainer>
-          <ComposedChart data={data} margin={{ top: 8, right: 0, bottom: 0, left: -18 }}>
-            <CartesianGrid stroke="#ece7f5" vertical={false} />
-            <XAxis dataKey="minggu" type="number" domain={[12, 40]} tick={{ fontSize: 11, fill: "#6b6480" }} tickLine={false} axisLine={false} />
-            <YAxis yAxisId="tfu" tick={{ fontSize: 11, fill: "#6b6480" }} tickLine={false} axisLine={false} unit=" cm" width={52} />
-            <YAxis yAxisId="djj" orientation="right" domain={[100, 180]} tick={{ fontSize: 11, fill: "#e5537a" }} tickLine={false} axisLine={false} width={36} />
-            <Tooltip labelFormatter={(l) => `Minggu ke-${l}`} contentStyle={{ borderRadius: 12, border: "1px solid #e8e3f1", fontSize: 12 }} />
-            <Area yAxisId="djj" dataKey={() => [120, 160]} name="DJJ normal" stroke="none" fill="#e5537a" fillOpacity={0.08} isAnimationActive={false} />
-            <Line yAxisId="tfu" dataKey="tfu" name="TFU (cm)" stroke="#6d3fd8" strokeWidth={2.5} dot={{ r: 3 }} isAnimationActive={false} connectNulls />
-            <Line yAxisId="djj" dataKey="djj" name="DJJ (×/menit)" stroke="#e5537a" strokeWidth={2} strokeDasharray="4 3" dot={{ r: 3 }} isAnimationActive={false} connectNulls />
+          <ComposedChart data={data} margin={{ top: 8, right: 0, bottom: 0, left: -8 }}>
+            <CartesianGrid stroke="#edf1f6" vertical={false} />
+            <XAxis dataKey="minggu" type="number" domain={[12, 40]} tick={{ fontSize: 11, fill: "#6b7686" }} tickLine={false} axisLine={false} />
+            <YAxis yAxisId="tfu" tick={{ fontSize: 11, fill: "#6b7686" }} tickLine={false} axisLine={false} unit=" cm" width={52} />
+            <YAxis yAxisId="djj" orientation="right" domain={[100, 180]} tick={{ fontSize: 11, fill: "#e84d8a" }} tickLine={false} axisLine={false} width={36} />
+            <Tooltip labelFormatter={(l) => `Minggu ke-${l}`} contentStyle={{ borderRadius: 12, border: "1px solid #e6ebf2", fontSize: 12 }} />
+            <Area yAxisId="djj" dataKey={() => [120, 160]} name="DJJ normal" stroke="none" fill="#e84d8a" fillOpacity={0.08} isAnimationActive={false} />
+            <Line yAxisId="tfu" dataKey="tfu" name="TFU (cm)" stroke="#2f8af5" strokeWidth={2.5} dot={{ r: 3 }} isAnimationActive={false} connectNulls />
+            <Line yAxisId="djj" dataKey="djj" name="DJJ (×/menit)" stroke="#e84d8a" strokeWidth={2} strokeDasharray="4 3" dot={{ r: 3 }} isAnimationActive={false} connectNulls />
           </ComposedChart>
         </ResponsiveContainer>
       </div>

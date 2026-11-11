@@ -1,16 +1,30 @@
 "use client";
 
-import { Check } from "lucide-react";
-import { motion } from "motion/react";
 import { toast } from "sonner";
+import { GambarKia } from "@/components/gambar-kia";
+import { Ilustrasi, type NamaIlustrasi } from "@/components/ilustrasi";
 import { KepalaHalaman } from "@/components/kepala";
-import { Kartu, Memuat, TautanBuku } from "@/components/ui";
+import { Memuat, TautanBuku } from "@/components/ui";
 import { kamus } from "@/lib/kamus";
 import { useRingkasan } from "@/lib/hooks";
 import { usePengguna, useStore } from "@/lib/store";
 import { terakhir } from "@/lib/tahap";
 import { cn } from "@/lib/util";
 
+const GAMBAR: Record<string, NamaIlustrasi> = {
+  tanya_tanggal_persalinan: "jadwal",
+  pendamping_siap: "keluarga",
+  tabungan_persalinan: "dompet",
+  kartu_jkn: "kartu",
+  penolong_dipilih: "rs",
+  dokumen_siap: "persiapan",
+  donor_darah_siap: "darah",
+  kendaraan_siap: "mobil",
+  stiker_p4k: "rumah",
+  rencana_kb: "kb",
+};
+
+/** Ceklis P4K (Buku KIA hlm. 18): tiap butir diketuk untuk menandai sudah siap. */
 export default function Persiapan() {
   const u = usePengguna();
   const r = useRingkasan(u?.ibuId);
@@ -33,38 +47,51 @@ export default function Persiapan() {
   return (
     <div className="px-4">
       <KepalaHalaman judul="Persiapan melahirkan" sub="Ceklis P4K · diisi oleh ibu" kembali="/ibu" />
-      <Kartu className="mb-4 flex items-center gap-4">
-        <div className="relative size-16 shrink-0">
-          <svg viewBox="0 0 36 36" className="size-16 -rotate-90">
-            <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--brand-soft)" strokeWidth="4" />
-            <motion.circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--brand)" strokeWidth="4" strokeLinecap="round" strokeDasharray="97.4" initial={{ strokeDashoffset: 97.4 }} animate={{ strokeDashoffset: 97.4 * (1 - sudah / kolom.length) }} />
-          </svg>
-          <span className="absolute inset-0 grid place-items-center text-sm font-extrabold">
-            {sudah}/{kolom.length}
-          </span>
+
+      <section className="overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-kartu)]">
+        <div className="bg-[#eef3fb]">
+          <GambarKia nama="p4k" alt="Ibu dan suami berkonsultasi dengan bidan menentukan tanggal persalinan" preload className="mx-auto max-h-44 w-auto" />
         </div>
-        <div className="text-sm">
-          <p className="font-bold">Persiapan dimulai sejak trimester 2</p>
-          <p className="text-muted">
-            {minggu >= 36 ? "Sudah minggu ke-36: penolong, donor darah, dan kendaraan sebaiknya sudah siap." : "Centang yang sudah Ibu lakukan. Kader dan suami ikut melihat kemajuannya."}
+        <div className="p-4">
+          <p className="text-[15px] font-bold">
+            {sudah === kolom.length ? "Semua persiapan sudah siap" : `${sudah} dari ${kolom.length} sudah siap`}
+          </p>
+          <div className="mt-2 flex gap-1" aria-hidden>
+            {kolom.map(([k]) => (
+              <span key={k} className={cn("h-1.5 flex-1 rounded-full transition-colors", data[k] === true ? "bg-teal" : "bg-black/[0.07]")} />
+            ))}
+          </div>
+          <p className="mt-2.5 text-sm text-muted">
+            {minggu >= 36 ? "Sudah minggu ke-36: penolong, donor darah, dan kendaraan sebaiknya sudah siap." : "Mulai sejak trimester 2. Suami dan kader ikut melihat kemajuannya."}
           </p>
         </div>
-      </Kartu>
-      <div className="space-y-2">
+      </section>
+
+      <h2 className="mb-1 mt-6 text-[17px] font-bold">Daftar persiapan</h2>
+      <p className="mb-3 text-sm text-muted">Ketuk butir yang sudah Ibu siapkan.</p>
+      <ul className="space-y-2.5">
         {kolom.map(([k, kol]) => {
           const v = data[k] === true;
-          const penting = /minggu ke-36/.test(kol.peringatan ?? "");
+          const penting = /minggu ke-36/.test(kol.peringatan ?? "") && !v && minggu >= 30;
           return (
-            <button key={k} onClick={() => toggle(k)} aria-pressed={v} className={cn("flex w-full items-start gap-3 rounded-2xl border p-4 text-left transition", v ? "border-hijau/40 bg-hijau-soft" : "border-line bg-surface hover:bg-bg")}>
-              <span className={cn("mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg border-2", v ? "border-hijau bg-hijau text-white" : "border-line")}>{v && <Check className="size-4" strokeWidth={3} />}</span>
-              <span className="flex-1 text-sm font-medium">
-                {kol.label}
-                {penting && !v && minggu >= 30 && <span className="mt-1 block text-xs font-semibold text-kuning">Penting sebelum minggu ke-36</span>}
-              </span>
-            </button>
+            <li key={k}>
+              <button
+                type="button"
+                onClick={() => toggle(k)}
+                aria-pressed={v}
+                className={cn("flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition active:scale-[0.99]", v ? "border-transparent bg-surface shadow-[var(--shadow-kartu)]" : "border-dashed border-[#c9d3df] bg-transparent")}
+              >
+                <Ilustrasi nama={GAMBAR[k] ?? "persiapan"} className={cn("size-12 shrink-0 transition", !v && "opacity-70 grayscale-[60%]")} />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[15px] font-medium leading-snug">{kol.label}</span>
+                  {penting && <span className="mt-0.5 block text-xs font-semibold text-kuning">Penting sebelum minggu ke-36</span>}
+                </span>
+                <span className={cn("shrink-0 rounded-full px-2.5 py-1 text-xs font-bold", v ? "bg-teal text-white" : "text-muted ring-1 ring-line")}>{v ? "Siap" : "Belum"}</span>
+              </button>
+            </li>
           );
         })}
-      </div>
+      </ul>
       <div className="mt-4">
         <TautanBuku halaman={18} label="Persiapan melahirkan di Buku KIA hlm. 18" />
       </div>

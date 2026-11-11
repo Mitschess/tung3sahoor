@@ -30,7 +30,7 @@ export default function Hasil() {
 
       {r.tahap.set === "hamil" && (
         <>
-          <Kartu>
+          <Kartu id="grafik" className="scroll-mt-20">
             <JudulBagian>Kenaikan berat badan</JudulBagian>
             <GrafikBB r={r} />
           </Kartu>
