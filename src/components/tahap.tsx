@@ -1,19 +1,21 @@
 "use client";
 
-import { Baby, CalendarCheck2, CalendarClock, CalendarX2, Clock3, HeartPulse, Stethoscope } from "lucide-react";
+import { ArrowRight, Baby } from "lucide-react";
 import { motion } from "motion/react";
+import Link from "next/link";
 import type { Kunjungan } from "@/lib/jadwal";
 import type { Tahap } from "@/lib/tahap";
 import { cn } from "@/lib/util";
-import { Lencana, TautanBuku } from "./ui";
+import type { NamaGambar } from "@/data/gambar-kia";
+import { GambarKia } from "./gambar-kia";
 
-const BUAH = [
-  { m: 4, nama: "biji beras", e: "🌾" },
-  { m: 12, nama: "jeruk nipis", e: "🍋" },
-  { m: 16, nama: "apel", e: "🍎" },
-  { m: 24, nama: "jagung", e: "🌽" },
-  { m: 30, nama: "pepaya", e: "🥭" },
-  { m: 99, nama: "semangka", e: "🍉" },
+const BUAH: { m: number; nama: string; g: NamaGambar }[] = [
+  { m: 4, nama: "biji beras", g: "buah-beras" },
+  { m: 12, nama: "jeruk nipis", g: "buah-jeruk-nipis" },
+  { m: 16, nama: "apel", g: "buah-apel" },
+  { m: 24, nama: "jagung", g: "buah-jagung" },
+  { m: 30, nama: "pepaya", g: "buah-pepaya" },
+  { m: 99, nama: "semangka", g: "buah-semangka" },
 ];
 
 /** Perbandingan ukuran bayi sesuai Buku KIA hlm. 4–19. */
@@ -21,95 +23,99 @@ export function ukuranBayi(minggu: number) {
   return BUAH.find((b) => minggu <= b.m) ?? BUAH[BUAH.length - 1];
 }
 
-export function KartuTahap({ t, nama }: { t: Tahap; nama?: string }) {
+export function KartuTahap({ t, href }: { t: Tahap; href?: string }) {
   const hamil = t.set === "hamil";
   const buah = hamil ? ukuranBayi(t.ukMinggu ?? 0) : null;
-  return (
-    <div className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#6d3fd8] via-[#7b4ae0] to-[#e5537a] p-5 text-white shadow-[0_20px_40px_-20px_#6d3fd8]">
-      <div className="aurora-blob pointer-events-none absolute -right-10 -top-16 size-48 rounded-full bg-white/25" />
-      <div className="aurora-blob pointer-events-none absolute -bottom-20 -left-10 size-48 rounded-full bg-[#ffb3c7]/30 [animation-delay:-6s]" />
-      <div className="relative">
-        <p className="text-sm font-medium text-white/80">{nama ? `Halo, Bu ${nama.split(" ")[0]} 👋` : "Aku sedang di mana?"}</p>
-        <div className="mt-2 flex items-end justify-between gap-3">
-          <div>
-            <h1 className="text-[28px] font-extrabold leading-tight tracking-tight">{t.label}</h1>
-            <p className="mt-1 text-sm text-white/85">{t.sublabel}</p>
-          </div>
-          {buah && (
-            <div className="flex shrink-0 flex-col items-center rounded-2xl bg-white/15 px-3 py-2 text-center backdrop-blur">
-              <span className="text-3xl leading-none">{buah.e}</span>
-              <span className="mt-1 text-[11px] font-semibold leading-tight">sebesar<br />{buah.nama}</span>
-            </div>
-          )}
-          {t.set === "nifas" && (
-            <div className="flex shrink-0 flex-col items-center rounded-2xl bg-white/15 px-3 py-2 text-center backdrop-blur">
-              <Baby className="size-7" />
-              <span className="mt-1 text-[11px] font-semibold">{t.umurBayiHari} hari</span>
-            </div>
-          )}
+  const isi = (
+    <>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[15px] font-bold">{hamil ? "Kehamilan Ibu" : t.set === "nifas" ? "Masa Nifas & Bayi" : "Tahap Ibu"}</p>
+        {href && <ArrowRight className="size-5 text-brand" />}
+      </div>
+      <div className="mt-3 flex items-center gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="text-2xl font-extrabold leading-tight tracking-tight">{t.label}</p>
+          <p className="mt-0.5 text-sm text-muted">{t.sublabel}</p>
         </div>
-        <div className="mt-4">
-          <div className="h-2 overflow-hidden rounded-full bg-white/25">
-            <motion.div className="h-full rounded-full bg-white" initial={{ width: 0 }} animate={{ width: `${Math.round(t.progres * 100)}%` }} transition={{ duration: 1, ease: "easeOut" }} />
+        {buah && (
+          <div className="size-16 shrink-0 overflow-hidden rounded-full bg-rose-soft" title={`Sebesar ${buah.nama}`}>
+            {/* Gambar buah dari Buku KIA; keterangan di bawah gambar dipotong supaya buahnya saja yang tampak. */}
+            <GambarKia nama={buah.g} alt={`Sebesar ${buah.nama}`} sizes="64px" className="h-full w-full scale-[1.45] object-cover object-[50%_30%]" />
           </div>
-          <div className="mt-1.5 flex justify-between text-[11px] font-medium text-white/80">
-            {hamil ? (
-              <>
-                <span>T1</span>
-                <span>T2</span>
-                <span>T3</span>
-                <span>HPL{t.sumberHpl === "USG T1" ? " (USG)" : ""}</span>
-              </>
-            ) : (
-              <>
-                <span>Melahirkan</span>
-                <span>KF2</span>
-                <span>KF3</span>
-                <span>Hari 42</span>
-              </>
-            )}
+        )}
+        {t.set === "nifas" && (
+          <div className="flex size-16 shrink-0 flex-col items-center justify-center rounded-full bg-rose-soft text-rose">
+            <Baby className="size-6" />
+            <span className="text-[10px] font-bold">{t.umurBayiHari} hari</span>
           </div>
+        )}
+      </div>
+      <div className="mt-4">
+        <div className="h-2 overflow-hidden rounded-full bg-brand-soft">
+          <motion.div className="h-full rounded-full bg-brand" initial={{ width: 0 }} animate={{ width: `${Math.round(t.progres * 100)}%` }} transition={{ duration: 0.8, ease: "easeOut" }} />
+        </div>
+        <div className="mt-1.5 flex justify-between text-[11px] font-medium text-muted">
+          {hamil ? (
+            <>
+              <span>T1</span>
+              <span>T2</span>
+              <span>T3</span>
+              <span>HPL{t.sumberHpl === "USG T1" ? " (USG)" : ""}</span>
+            </>
+          ) : (
+            <>
+              <span>Melahirkan</span>
+              <span>KF2</span>
+              <span>KF3</span>
+              <span>Hari 42</span>
+            </>
+          )}
         </div>
       </div>
-    </div>
+      {buah && <p className="mt-3 rounded-xl bg-bg px-3 py-2 text-xs text-muted">Si kecil kini kira-kira sebesar <b className="text-ink">{buah.nama}</b>.</p>}
+    </>
+  );
+  const kelas = "block rounded-2xl bg-surface p-4 shadow-[var(--shadow-kartu)]";
+  return href ? (
+    <Link href={href} className={cn(kelas, "transition active:scale-[0.99]")}>
+      {isi}
+    </Link>
+  ) : (
+    <div className={kelas}>{isi}</div>
   );
 }
 
-const IKON_STATUS = {
-  selesai: { ikon: CalendarCheck2, warna: "text-hijau bg-hijau-soft", label: "Selesai" },
-  sekarang: { ikon: Clock3, warna: "text-brand-ink bg-brand-soft", label: "Jatuh tempo" },
-  "akan datang": { ikon: CalendarClock, warna: "text-muted bg-black/5", label: "Akan datang" },
-  terlambat: { ikon: CalendarX2, warna: "text-kuning bg-kuning-soft", label: "Terlambat" },
-} as const;
+const TITIK: Record<Kunjungan["status"], string> = {
+  selesai: "size-3 bg-hijau ring-4 ring-surface",
+  sekarang: "size-3.5 bg-brand ring-4 ring-brand-soft",
+  terlambat: "size-3 bg-kuning ring-4 ring-surface",
+  "akan datang": "size-3 border-2 border-[#c3ccd8] bg-surface ring-4 ring-surface",
+};
 
+const tgl = (d: Date | string) => new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+
+/** Jadwal kunjungan sebagai garis waktu: titik hijau sudah, biru sekarang, kuning terlambat, kosong nanti. */
 export function DaftarJadwal({ js, ringkas }: { js: Kunjungan[]; ringkas?: boolean }) {
   const tampil = ringkas ? js.filter((k) => k.status !== "selesai").slice(0, 4) : js;
   return (
-    <ol className="space-y-2">
-      {tampil.map((k) => {
-        const s = IKON_STATUS[k.status];
-        const Ikon = k.oleh === "Dokter" ? Stethoscope : k.untuk === "bayi" ? Baby : k.jenis === "kf" ? HeartPulse : s.ikon;
-        return (
-          <li key={k.kode} className={cn("flex items-center gap-3 rounded-2xl border border-line bg-surface p-3", k.status === "sekarang" && "border-brand/40 ring-2 ring-brand/10")}>
-            <div className={cn("grid size-10 shrink-0 place-items-center rounded-xl", s.warna)}>
-              <Ikon className="size-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold">{k.nama}</p>
-              <p className="text-xs text-muted">
-                {k.status === "selesai" && k.tanggalSelesai
-                  ? `Selesai ${new Date(k.tanggalSelesai).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`
-                  : `${k.mulai.toLocaleDateString("id-ID", { day: "numeric", month: "short" })} – ${k.selesai.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`}{" "}
-                · {k.oleh}
-              </p>
-            </div>
-            <div className="flex flex-col items-end gap-1">
-              <Lencana warna={k.status === "selesai" ? "hijau" : k.status === "terlambat" ? "kuning" : k.status === "sekarang" ? "brand" : "netral"}>{s.label}</Lencana>
-              {!ringkas && <TautanBuku halaman={k.halamanCetak} label={`hlm. ${k.halamanCetak}`} />}
-            </div>
-          </li>
-        );
-      })}
+    <ol className="relative rounded-2xl bg-surface px-4 py-1.5 shadow-[var(--shadow-kartu)]">
+      {tampil.length > 1 && <span className="absolute bottom-7 left-[22px] top-7 w-0.5 rounded-full bg-line" aria-hidden />}
+      {tampil.map((k) => (
+        <li key={k.kode} className="relative flex items-start gap-3.5 py-2.5">
+          <span className="grid h-5 w-3.5 shrink-0 place-items-center">
+            <span className={cn("block rounded-full", TITIK[k.status])} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className={cn("block text-[15px] font-semibold leading-snug", k.status === "selesai" && "text-ink/60")}>{k.nama}</span>
+            <span className="block text-xs text-muted">
+              {k.status === "selesai" && k.tanggalSelesai ? `Selesai ${tgl(k.tanggalSelesai)}` : `${tgl(k.mulai)} – ${tgl(k.selesai)}`} · {k.oleh}
+              {!ringkas && ` · hlm. ${k.halamanCetak}`}
+            </span>
+          </span>
+          {k.status === "sekarang" && <span className="mt-0.5 shrink-0 rounded-full bg-brand px-2.5 py-0.5 text-xs font-semibold text-white">Sekarang</span>}
+          {k.status === "terlambat" && <span className="mt-0.5 shrink-0 text-xs font-bold text-kuning">Terlambat</span>}
+        </li>
+      ))}
     </ol>
   );
 }
