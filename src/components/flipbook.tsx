@@ -1,35 +1,20 @@
 "use client";
 
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { animate, motion, useMotionValue, useReducedMotion } from "motion/react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/util";
 
-const DURASI = 0.62;
-const LENTUR = [0.32, 0.08, 0.22, 1] as const;
+const DURASI = 0.85;
+const LENTUR = [0.45, 0.05, 0.25, 1] as const;
+/** Seberapa miring garis lipatan di tengah balikan (bagian dari lebar halaman). */
+const MIRING = 0.14;
 
-/** Balik halaman seperti buku: halaman lama berputar pada tepi kiri, halaman baru sudah menunggu di bawahnya. */
-const BALIK: Variants = {
-  masuk: (arah: number) => (arah > 0 ? { rotateY: 0, zIndex: 1 } : { rotateY: -105, zIndex: 3 }),
-  tengah: { rotateY: 0, zIndex: 2, opacity: 1, pointerEvents: "auto", transition: { duration: DURASI, ease: LENTUR } },
-  keluar: (arah: number) =>
-    arah > 0
-      ? { rotateY: -105, zIndex: 3, pointerEvents: "none", transition: { duration: DURASI, ease: LENTUR } }
-      : { rotateY: 0, zIndex: 1, opacity: 0.999, pointerEvents: "none", transition: { duration: DURASI } },
-};
-
-/** Bayangan di atas halaman yang sedang dibalik. */
-const BAYANGAN: Variants = {
-  masuk: (arah: number) => ({ opacity: arah > 0 ? 0 : 0.5 }),
-  tengah: { opacity: 0, transition: { duration: DURASI, ease: LENTUR } },
-  keluar: (arah: number) => ({ opacity: arah > 0 ? 0.5 : 0, transition: { duration: DURASI, ease: LENTUR } }),
-};
-
-const PUDAR: Variants = {
-  masuk: { opacity: 0 },
-  tengah: { opacity: 1, zIndex: 2, transition: { duration: 0.2 } },
-  keluar: { opacity: 0, zIndex: 1, transition: { duration: 0.2 } },
-};
+/** Dua lembar yang terlibat dalam satu balikan: `atas` terlipat, `bawah` terlihat di baliknya. */
+interface Balik {
+  atas: number;
+  bawah: number;
+}
 
 export interface FlipbookProps {
   jumlah: number;
@@ -44,34 +29,199 @@ export interface FlipbookProps {
   onTutup: () => void;
 }
 
+/**
+ * Buku yang dibalik seperti kertas sungguhan: halaman terlipat dari sudut kanan bawah,
+ * sisi belakang kertas terlihat, dan lipatan mengikuti jari saat digeser.
+ * Kemajuan balikan `p`: 0 = lembar `atas` tampil penuh, 1 = sudah terbalik (lembar `bawah` tampil).
+ */
 export function Flipbook({ jumlah, awal = 0, render, judul, label, warna = { teks: "text-brand", isi: "bg-brand" }, onUbah, onTutup }: FlipbookProps) {
-  const [[i, arah], setPosisi] = useState<[number, number]>([Math.min(Math.max(awal, 0), jumlah - 1), 1]);
+  const mula = Math.min(Math.max(awal, 0), jumlah - 1);
+  const [i, setI] = useState(mula);
+  const [balik, setBalik] = useState<Balik | null>(null);
   const kurangiGerak = useReducedMotion();
 
-  const ke = useCallback(
-    (tujuan: number) => {
-      setPosisi(([lama]) => {
-        const t = Math.min(Math.max(tujuan, 0), jumlah - 1);
-        return t === lama ? [lama, 1] : [t, t > lama ? 1 : -1];
-      });
-    },
-    [jumlah],
-  );
+  const p = useMotionValue(0);
+  const iRef = useRef(mula);
+  const balikRef = useRef<Balik | null>(null);
+  const anim = useRef<ReturnType<typeof animate> | null>(null);
+  const seret = useRef<1 | -1 | null>(null);
+  const ukuran = useRef({ w: 1, h: 1 });
+  const panggung = useRef<HTMLDivElement>(null);
+  const lipat = useRef<HTMLDivElement>(null);
+  const kertas = useRef<HTMLDivElement>(null);
+  const bayang = useRef<HTMLDivElement>(null);
+
+  const lembar = useCallback((k: number) => panggung.current?.querySelector<HTMLElement>(`:scope > [data-lembar="${k}"]`) ?? null, []);
+
+  /** Menggambar satu bingkai balikan langsung ke DOM (tanpa render ulang React). */
+  const gambar = useCallback((v: number) => {
+    const b = balikRef.current;
+    const atas = b ? lembar(b.atas) : null;
+    if (!b || !atas || !lipat.current || !kertas.current || !bayang.current) return;
+    const { w, h } = ukuran.current;
+    const s = Math.sin(Math.PI * v);
+    const x = w * (1 - v);
+    const k = MIRING * w * s;
+    const xa = x + k; // garis lipatan di tepi atas
+    const xb = x - k; // garis lipatan di tepi bawah (lebih dulu ke kiri: sudut bawah terangkat)
+    atas.style.clipPath = `polygon(0px 0px, ${xa}px 0px, ${xb}px ${h}px, 0px ${h}px)`;
+
+    if (v <= 0.002 || v >= 0.998) {
+      lipat.current.style.display = "";
+      bayang.current.style.display = "";
+      return;
+    }
+
+    // Kerangka lipatan: n = arah tegak lurus ke kanan lipatan, d = arah sepanjang lipatan (ke bawah).
+    const panjang = Math.hypot(2 * k, h);
+    const cos = h / panjang;
+    const sin = (2 * k) / panjang;
+    const jarak = (px: number, py: number) => (px - xa) * cos + py * sin;
+    const sepanjang = (px: number, py: number) => -(px - xa) * sin + py * cos;
+
+    // Bagian halaman di kanan lipatan (yang terangkat), lalu dicerminkan terhadap garis lipatan.
+    const sudut: [number, number][] = [
+      [0, 0],
+      [w, 0],
+      [w, h],
+      [0, h],
+    ];
+    const lebar = w + 40;
+    const ruang = w;
+    const titik: string[] = [];
+    for (let n = 0; n < 4; n++) {
+      const [ax, ay] = sudut[n];
+      const [bx, by] = sudut[(n + 1) % 4];
+      const sa = jarak(ax, ay);
+      const sb = jarak(bx, by);
+      if (sa >= 0) titik.push(`${lebar - sa}px ${ruang + sepanjang(ax, ay)}px`);
+      if (sa >= 0 !== sb >= 0) {
+        const t = sa / (sa - sb);
+        const cx = ax + (bx - ax) * t;
+        const cy = ay + (by - ay) * t;
+        titik.push(`${lebar}px ${ruang + sepanjang(cx, cy)}px`);
+      }
+    }
+
+    const putar = `rotate(${Math.atan2(2 * k, h)}rad)`;
+    const tinggi = h + 3 * w;
+    const l = lipat.current.style;
+    l.display = "block";
+    l.left = `${xa - lebar}px`;
+    l.top = `${-ruang}px`;
+    l.width = `${lebar}px`;
+    l.height = `${tinggi}px`;
+    l.transformOrigin = `${lebar}px ${ruang}px`;
+    l.transform = putar;
+    l.filter = `drop-shadow(-8px 6px 14px rgb(15 30 60 / ${(0.12 + 0.3 * s).toFixed(3)}))`;
+    kertas.current.style.clipPath = `polygon(${titik.join(", ")})`;
+
+    const g = bayang.current.style;
+    g.display = "block";
+    g.left = `${xa}px`;
+    g.top = `${-ruang}px`;
+    g.width = `${24 + 90 * s}px`;
+    g.height = `${tinggi}px`;
+    g.transformOrigin = `0px ${ruang}px`;
+    g.transform = putar;
+    g.opacity = String(Math.min(1, 0.25 + s));
+  }, [lembar]);
+
+  useEffect(() => p.on("change", gambar), [p, gambar]);
+
+  // Begitu dua lembar balikan terpasang, gambar bingkai pertama sebelum layar dicat.
+  useLayoutEffect(() => {
+    if (balik) gambar(p.get());
+  }, [balik, gambar, p]);
 
   useEffect(() => {
     onUbah?.(i);
   }, [i, onUbah]);
 
+  const mulai = useCallback(
+    (atas: number, bawah: number, dari: number) => {
+      const r = panggung.current?.getBoundingClientRect();
+      if (!r) return false;
+      ukuran.current = { w: r.width, h: r.height };
+      p.set(dari);
+      balikRef.current = { atas, bawah };
+      setBalik({ atas, bawah });
+      return true;
+    },
+    [p],
+  );
+
+  const selesai = useCallback((target: 0 | 1) => {
+    const b = balikRef.current;
+    if (!b) return;
+    const baru = target === 1 ? b.bawah : b.atas;
+    // Lembar yang tetap tinggal dibersihkan; lembar yang dilepas dibiarkan agar tidak berkedip.
+    const tinggal = lembar(baru);
+    if (tinggal) tinggal.style.clipPath = "";
+    if (lipat.current) lipat.current.style.display = "";
+    if (bayang.current) bayang.current.style.display = "";
+    balikRef.current = null;
+    anim.current = null;
+    iRef.current = baru;
+    setBalik(null);
+    setI(baru);
+  }, [lembar]);
+
+  const jalankan = useCallback(
+    (target: 0 | 1, durasi: number) => {
+      anim.current?.stop();
+      anim.current = animate(p, target, { duration: durasi, ease: LENTUR, onComplete: () => selesai(target) });
+    },
+    [p, selesai],
+  );
+
+  const ke = useCallback(
+    (tujuan: number) => {
+      const t = Math.min(Math.max(tujuan, 0), jumlah - 1);
+      const b = balikRef.current;
+      if (b) {
+        // Sedang dibalik (atau sedang mengintip): teruskan ke arah yang diminta.
+        if (seret.current) return;
+        if (t === b.bawah) jalankan(1, DURASI * (1 - p.get()) + 0.15);
+        else if (t === b.atas) jalankan(0, DURASI * p.get() + 0.15);
+        return;
+      }
+      const kini = iRef.current;
+      if (t === kini) return;
+      const maju = t > kini;
+      if (kurangiGerak || !mulai(maju ? kini : t, maju ? t : kini, maju ? 0 : 1)) {
+        iRef.current = t;
+        setI(t);
+        return;
+      }
+      jalankan(maju ? 1 : 0, DURASI);
+    },
+    [jumlah, jalankan, kurangiGerak, mulai, p],
+  );
+
   useEffect(() => {
     const tombol = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") ke(i + 1);
-      else if (e.key === "ArrowLeft") ke(i - 1);
+      if (e.key === "ArrowRight") ke(iRef.current + 1);
+      else if (e.key === "ArrowLeft") ke(iRef.current - 1);
     };
     window.addEventListener("keydown", tombol);
     return () => window.removeEventListener("keydown", tombol);
-  }, [i, ke]);
+  }, [ke]);
+
+  // Saat buku baru dibuka di sampul, sudut halaman terangkat sebentar sebagai petunjuk.
+  useEffect(() => {
+    if (kurangiGerak || mula !== 0 || jumlah < 2) return;
+    const id = window.setTimeout(() => {
+      if (balikRef.current || iRef.current !== 0 || !mulai(0, 1, 0)) return;
+      anim.current = animate(p, [0, 0.17, 0], { duration: 1.2, ease: "easeInOut", onComplete: () => selesai(0) });
+    }, 700);
+    return () => window.clearTimeout(id);
+  }, [jumlah, kurangiGerak, mula, mulai, p, selesai]);
+
+  useEffect(() => () => anim.current?.stop(), []);
 
   const terakhir = i === jumlah - 1;
+  const tampil = balik ? [balik.atas, balik.bawah] : [i];
 
   return (
     <div className="flex h-dvh flex-col">
@@ -105,7 +255,37 @@ export function Flipbook({ jumlah, awal = 0, render, judul, label, warna = { tek
       )}
 
       <div className="relative min-h-0 flex-1 px-4 pb-3 pt-4">
-        <div className="relative h-full [perspective:2200px]">
+        <motion.div
+          ref={panggung}
+          className="relative h-full"
+          style={{ touchAction: "pan-y" }}
+          onPan={(_, info) => {
+            if (kurangiGerak || (anim.current && !seret.current)) return;
+            const dx = info.offset.x;
+            if (!seret.current) {
+              if (Math.abs(dx) < 10 || Math.abs(dx) < Math.abs(info.offset.y)) return;
+              const arah = dx < 0 ? 1 : -1;
+              const kini = iRef.current;
+              if (arah === 1 ? kini >= jumlah - 1 : kini <= 0) return;
+              if (!mulai(arah === 1 ? kini : kini - 1, arah === 1 ? kini + 1 : kini, arah === 1 ? 0 : 1)) return;
+              seret.current = arah;
+            }
+            const q = Math.min(Math.max((seret.current === 1 ? -dx : dx) / (ukuran.current.w * 0.9), 0), 1);
+            p.set(seret.current === 1 ? q : 1 - q);
+          }}
+          onPanEnd={(_, info) => {
+            const arah = seret.current;
+            if (!arah) {
+              // Tanpa animasi: geseran cepat tetap berpindah lembar.
+              if (kurangiGerak && Math.abs(info.offset.x) > 50 && Math.abs(info.offset.x) > Math.abs(info.offset.y)) ke(iRef.current + (info.offset.x < 0 ? 1 : -1));
+              return;
+            }
+            seret.current = null;
+            const v = p.get();
+            const target = arah === 1 ? (v > 0.3 || info.velocity.x < -400 ? 1 : 0) : v < 0.7 || info.velocity.x > 400 ? 0 : 1;
+            jalankan(target, 0.2 + 0.4 * Math.abs(target - v));
+          }}
+        >
           {/* Tebal buku: lembar-lembar berikutnya mengintip di tepi kanan bawah. */}
           {!terakhir && (
             <>
@@ -113,52 +293,62 @@ export function Flipbook({ jumlah, awal = 0, render, judul, label, warna = { tek
               <div className="absolute inset-0 translate-x-[3.5px] translate-y-[3.5px] rounded-[26px] bg-[#f3f6fa] shadow-sm" />
             </>
           )}
-          <AnimatePresence initial={false} custom={arah}>
-            <motion.article
-              key={i}
-              custom={arah}
-              variants={kurangiGerak ? PUDAR : BALIK}
-              initial="masuk"
-              animate="tengah"
-              exit="keluar"
-              onPanEnd={(_, info) => {
-                if (info.offset.x < -50 || info.velocity.x < -450) ke(i + 1);
-                else if (info.offset.x > 50 || info.velocity.x > 450) ke(i - 1);
-              }}
-              style={{ transformOrigin: "left center", backfaceVisibility: "hidden", touchAction: "pan-y" }}
-              className="absolute inset-0 overflow-hidden rounded-[26px] bg-surface shadow-[0_18px_40px_-20px_rgb(23_60_110/0.45),0_0_0_1px_rgb(23_60_110/0.05)]"
+
+          {/* `ke` membaca ref, tetapi hanya dipanggil dari tombol di dalam lembar (event), tidak saat render. */}
+          {/* eslint-disable-next-line react-hooks/refs */}
+          {tampil.map((k) => (
+            <article
+              key={k}
+              data-lembar={k}
+              style={{ zIndex: balik && k === balik.atas ? 3 : 1 }}
+              className={cn(
+                "absolute inset-0 overflow-hidden rounded-[26px] bg-surface shadow-[0_18px_40px_-20px_rgb(23_60_110/0.45),0_0_0_1px_rgb(23_60_110/0.05)]",
+                balik && "pointer-events-none select-none",
+              )}
               aria-roledescription="lembar"
-              aria-label={`Lembar ${i + 1} dari ${jumlah}`}
+              aria-label={`Lembar ${k + 1} dari ${jumlah}`}
             >
-              <div className="h-full overflow-y-auto overscroll-contain">{render(i, ke)}</div>
+              <div className="h-full overflow-y-auto overscroll-contain">{render(k, ke)}</div>
               {/* Lipatan tengah buku. */}
               <div className="pointer-events-none absolute inset-y-0 left-0 w-5 bg-gradient-to-r from-black/[0.06] to-transparent" />
-              {!kurangiGerak && <motion.div variants={BAYANGAN} custom={arah} className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/30 via-black/10 to-transparent" />}
-            </motion.article>
-          </AnimatePresence>
-        </div>
+            </article>
+          ))}
+
+          {/* Bayangan lipatan yang jatuh ke lembar di bawahnya. */}
+          <div className="pointer-events-none absolute inset-0 z-[2] overflow-hidden rounded-[26px]" aria-hidden>
+            <div ref={bayang} className="absolute hidden bg-gradient-to-r from-[rgb(15_30_60/0.32)] via-[rgb(15_30_60/0.08)] to-transparent" />
+          </div>
+
+          {/* Sisi belakang kertas yang sedang dilipat. */}
+          <div className="pointer-events-none absolute inset-0 z-[4] overflow-hidden rounded-[26px]" aria-hidden>
+            <div ref={lipat} className="absolute hidden">
+              <div
+                ref={kertas}
+                className="absolute inset-0 bg-[#fbfcfd] [background-image:linear-gradient(to_left,rgb(20_40_70/0.20)_0px,rgb(20_40_70/0.05)_12px,rgb(255_255_255/0)_38px),linear-gradient(to_left,#eef1f5,#ffffff_22%,#f7f9fb_60%,#e6ebf1)]"
+              />
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       <footer className="flex items-center gap-3 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-1">
         <button
           type="button"
-          onClick={() => ke(i - 1)}
+          onClick={() => ke(iRef.current - 1)}
           disabled={i === 0}
           className="grid size-14 shrink-0 place-items-center rounded-full bg-surface shadow-[var(--shadow-kartu)] transition active:scale-95 disabled:opacity-40"
           aria-label="Lembar sebelumnya"
         >
           <ChevronLeft className="size-6" />
         </button>
-        <p className="flex-1 text-center text-xs leading-tight text-muted">{i === 0 ? "Geser halaman atau tekan Lanjut" : terakhir ? "Sudah selesai dibaca" : "Geser untuk membalik"}</p>
+        <p className="flex-1 text-center text-xs leading-tight text-muted">{i === 0 ? "Tarik sudut halaman atau tekan Buka" : terakhir ? "Sudah selesai dibaca" : "Tarik halaman untuk membalik"}</p>
         <button
           type="button"
-          onClick={() => (terakhir ? onTutup() : ke(i + 1))}
+          onClick={() => (terakhir && !balik ? onTutup() : ke(iRef.current + 1))}
           className={cn("inline-flex h-14 shrink-0 items-center gap-1.5 rounded-full px-6 text-[17px] font-semibold text-white shadow-[0_10px_22px_-12px_rgb(0_0_0/0.5)] transition active:scale-95", warna.isi)}
         >
           {terakhir ? (
-            <>
-              Selesai
-            </>
+            "Selesai"
           ) : (
             <>
               {i === 0 ? "Buka" : "Lanjut"} <ChevronRight className="size-5" />
