@@ -11,6 +11,40 @@ export const BAB_TABEL: { tema: Tema; judul: string; tabel: string[] }[] = [
   { tema: "teal", judul: "Bayi 0–28 hari", tabel: ["kn", "imunisasi", "pemantauan_bayi", "tinja"] },
 ];
 
+/**
+ * Judul catatan dalam bahasa sehari-hari untuk layar ibu. Judul kamus data (mis. "Evaluasi kesehatan
+ * ibu hamil dan pemeriksaan dokter T1") tetap dipakai di layar petugas.
+ */
+const JUDUL_IBU: Record<string, string> = {
+  riwayat: "Data awal kehamilan",
+  anc: "Periksa kehamilan (K1–K6)",
+  dokter_t1: "Periksa dokter, trimester 1",
+  lab_t1: "Cek darah, trimester 1",
+  preeklamsia: "Cek risiko preeklamsia",
+  dm: "Cek gula darah kehamilan",
+  dokter_t3: "Periksa dokter, trimester 3",
+  pemantauan_hamil: "Pantau mingguan",
+  ttd: "Minum tablet tambah darah",
+  kelas_hamil: "Kelas ibu hamil",
+  persiapan: "Persiapan melahirkan (P4K)",
+  amanat: "Amanat persalinan",
+  persalinan: "Catatan persalinan",
+  riwayat_persalinan: "Riwayat melahirkan",
+  bayi_lahir: "Bayi saat lahir",
+  rujukan: "Rujukan",
+  kf: "Periksa nifas (KF1–KF4)",
+  pemantauan_nifas: "Pantau nifas harian",
+  kb: "Keluarga berencana (KB)",
+  kn: "Periksa bayi (KN1–KN3)",
+  imunisasi: "Imunisasi bayi",
+  pemantauan_bayi: "Pantau bayi harian",
+  tinja: "Warna tinja bayi",
+};
+
+export function judulTabelIbu(tabel: string): string {
+  return JUDUL_IBU[tabel] ?? kamus.tabel[tabel]?.judul ?? tabel;
+}
+
 /** Halaman cetak Buku KIA untuk sebuah tabel (PDF memuat 2 halaman cetak per lembar). */
 export function halamanCetakTabel(tabel: string): number | undefined {
   const pdf = kamus.tabel[tabel]?.halaman_pdf[0];

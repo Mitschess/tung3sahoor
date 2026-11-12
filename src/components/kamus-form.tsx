@@ -5,6 +5,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { bolehLihatKolom } from "@/lib/akses";
 import { DISEMBUNYIKAN, WAJIB, grupKolom, teksPanjang } from "@/lib/formulir";
 import { kamus, validasiNilai, type Kolom } from "@/lib/kamus";
+import { WARNA_TANDA, type Tanda } from "@/lib/nilai-catatan";
 import { usePengguna } from "@/lib/store";
 import type { Data, Nilai } from "@/lib/types";
 import { cn } from "@/lib/util";
@@ -298,23 +299,52 @@ export function YaTidak({ nilai, ubah }: { nilai: boolean | undefined; ubah: (v:
 }
 
 /** Tampilan baca-saja satu catatan sesuai kamus data. */
-export function TampilCatatan({ tabel, data, ringkas }: { tabel: string; data: Data; ringkas?: boolean }) {
+/**
+ * Isi satu catatan sebagai daftar label–nilai. Tekanan darah dibaca sebagai satu angka (145/95),
+ * label "Kunjungan ke-" menjadi "Kunjungan · ke-5", dan nilai yang ditandai (`tandai`) diberi warna.
+ */
+export function TampilCatatan({ tabel, data, ringkas, tandai }: { tabel: string; data: Data; ringkas?: boolean; tandai?: Record<string, Tanda> }) {
   const u = usePengguna();
   const def = kamus.tabel[tabel];
+  const ada = (v: unknown) => !(v === undefined || v === null || v === "" || (Array.isArray(v) && !v.length));
   const baris = Object.entries(def.kolom).filter(([k, kol]) => {
-    const v = data[k];
-    if (v === undefined || v === null || v === "" || (Array.isArray(v) && !v.length)) return false;
+    if (!ada(data[k])) return false;
     if (kol.tipe === "ref" || ["ibu_id", "kehamilan_id", "anak_id", "rujukan_id"].includes(k)) return false;
     return bolehLihatKolom(u, k);
   });
+  const td = ada(data.td_sistolik) && ada(data.td_diastolik);
   return (
-    <dl className={cn("grid gap-x-6", ringkas ? "grid-cols-1" : "sm:grid-cols-2")}>
-      {baris.map(([k, kol]) => (
-        <div key={k} className="flex items-baseline justify-between gap-4 border-b border-line/70 py-2 text-sm">
-          <dt className="text-muted">{kol.label}</dt>
-          <dd className="text-right font-semibold">{format(kol, data[k])}</dd>
-        </div>
-      ))}
+    <dl className={cn("-mx-2.5 grid gap-x-6", ringkas ? "grid-cols-1" : "sm:grid-cols-2")}>
+      {baris.map(([k, kol]) => {
+        if (td && k === "td_diastolik") return null;
+        let label = kol.label;
+        let nilai = format(kol, data[k]);
+        let t = tandai?.[k];
+        if (td && k === "td_sistolik") {
+          label = "Tekanan darah";
+          nilai = `${data.td_sistolik}/${data.td_diastolik} mmHg`;
+          t = tandai?.td;
+        } else if (kol.tipe === "number" && /\s?ke-$/.test(label)) {
+          label = label.replace(/\s?ke-$/, "");
+          nilai = `ke-${nilai}`;
+        } else if (kol.tipe === "number" && !kol.satuan && k.endsWith("_minggu")) {
+          nilai = `${nilai} minggu`;
+        }
+        return (
+          <div key={k} className={cn("flex items-baseline justify-between gap-4 border-b border-line/70 px-2.5 py-2 text-sm", t && cn("my-0.5 rounded-xl border-transparent", WARNA_TANDA[t.level]))}>
+            <dt className={t ? "font-medium" : "text-muted"}>{label}</dt>
+            <dd className="text-right font-semibold">
+              {nilai}
+              {t && (
+                <span className="block text-[11.5px] font-semibold">
+                  {t.judul}
+                  {t.ket && <span className="font-normal"> ({t.ket})</span>}
+                </span>
+              )}
+            </dd>
+          </div>
+        );
+      })}
     </dl>
   );
 }

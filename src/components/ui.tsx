@@ -131,7 +131,7 @@ export function TautanBuku({ halaman, className, label }: { halaman: number; cla
       href={urlHalamanCetak(halaman)}
       target="_blank"
       rel="noreferrer"
-      className={cn("inline-flex items-center gap-1 text-xs font-semibold text-brand hover:underline", className)}
+      className={cn("inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-semibold text-brand hover:underline", className)}
       title="Buka halaman ini di PDF Buku KIA 2024"
     >
       <BookOpen className="size-3.5" />
