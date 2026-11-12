@@ -31,57 +31,97 @@ function gambarJanin(minggu: number): NamaGambar {
   return "janin-9";
 }
 
+/** Penanda pada garis kemajuan: kehamilan 40 minggu (T2 mulai minggu 13, T3 minggu 25) atau nifas 42 hari. */
+const PENANDA_HAMIL = [
+  { label: "T1", posisi: 0 },
+  { label: "T2", posisi: 13 / 40 },
+  { label: "T3", posisi: 25 / 40 },
+];
+const PENANDA_NIFAS = [
+  { label: "Lahir", posisi: 0 },
+  { label: "Hari 7", posisi: 7 / 42 },
+  { label: "Hari 28", posisi: 28 / 42 },
+];
+
 export function KartuTahap({ t, href }: { t: Tahap; href?: string }) {
   const hamil = t.set === "hamil";
+  const nifas = t.set === "nifas";
   const buah = hamil ? ukuranBayi(t.ukMinggu ?? 0) : null;
+  const sisaHari = hamil && t.hpl ? Math.max(0, 280 - (t.ukHari ?? 0)) : null;
+  const tglHpl = t.hpl?.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+  const penanda = hamil ? PENANDA_HAMIL : nifas ? PENANDA_NIFAS : null;
   const isi = (
     <>
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[15px] font-bold">{hamil ? "Kehamilan Ibu" : t.set === "nifas" ? "Masa Nifas & Bayi" : "Tahap Ibu"}</p>
+        <p className="text-sm font-semibold text-muted">{hamil ? "Usia kehamilan" : nifas ? "Masa nifas" : "Tahap Ibu"}</p>
         {href && <ArrowRight className="size-5 text-brand" />}
       </div>
-      <div className="mt-3 flex items-center gap-4">
+      <div className="mt-1 flex items-center gap-4">
         <div className="min-w-0 flex-1">
-          <p className="text-2xl font-extrabold leading-tight tracking-tight">{t.label}</p>
-          <p className="mt-0.5 text-sm text-muted">
-            {t.sublabel}
-            {buah && ` · bayi sebesar ${buah.nama}`}
-          </p>
+          {hamil ? (
+            <p className="flex flex-wrap items-baseline gap-x-1.5 leading-none">
+              <span className="text-[40px] font-extrabold tracking-tight">{t.ukMinggu}</span>
+              <span className="text-lg font-bold">minggu</span>
+              {!!t.ukSisaHari && <span className="text-base font-semibold text-muted">{t.ukSisaHari} hari</span>}
+            </p>
+          ) : nifas ? (
+            <p className="flex flex-wrap items-baseline gap-x-1.5 leading-none">
+              <span className="text-lg font-bold">
+                Hari ke-<span className="text-[40px] font-extrabold tracking-tight">{t.hariNifas}</span>
+              </span>
+              <span className="text-base font-semibold text-muted">dari 42</span>
+            </p>
+          ) : (
+            <p className="text-2xl font-extrabold leading-tight tracking-tight">{t.label}</p>
+          )}
+          <div className="mt-2.5 flex flex-wrap gap-1.5 text-xs font-semibold">
+            {hamil && <span className="rounded-full bg-brand-soft px-2.5 py-1 text-brand-ink">Trimester {t.trimester}</span>}
+            {hamil && tglHpl && (
+              <span className="rounded-full bg-rose-soft px-2.5 py-1 text-rose">
+                HPL {tglHpl}
+                {t.sumberHpl === "USG T1" && " (USG)"}
+              </span>
+            )}
+            {nifas && <span className="rounded-full bg-rose-soft px-2.5 py-1 text-rose">Bayi berumur {t.umurBayiHari} hari</span>}
+            {!hamil && !nifas && <span className="font-medium text-muted">{t.sublabel}</span>}
+          </div>
         </div>
         {hamil && (
-          <div className="size-[72px] shrink-0 overflow-hidden rounded-full bg-[#fbebee]">
-            <GambarKia nama={gambarJanin(t.ukMinggu ?? 0)} alt="Gambaran janin di dalam kandungan" sizes="72px" className="h-full w-full object-cover" />
+          <div className="size-[76px] shrink-0 overflow-hidden rounded-full bg-[#fbebee]">
+            <GambarKia nama={gambarJanin(t.ukMinggu ?? 0)} alt="Gambaran janin di dalam kandungan" sizes="76px" className="h-full w-full object-cover" />
           </div>
         )}
-        {t.set === "nifas" && (
-          <div className="flex size-16 shrink-0 flex-col items-center justify-center rounded-full bg-rose-soft text-rose">
-            <Baby className="size-6" />
-            <span className="text-[10px] font-bold">{t.umurBayiHari} hari</span>
+        {nifas && (
+          <div className="grid size-16 shrink-0 place-items-center rounded-full bg-rose-soft text-rose">
+            <Baby className="size-7" />
           </div>
         )}
       </div>
-      <div className="mt-4">
-        <div className="h-2 overflow-hidden rounded-full bg-brand-soft">
-          <motion.div className="h-full rounded-full bg-brand" initial={{ width: 0 }} animate={{ width: `${Math.round(t.progres * 100)}%` }} transition={{ duration: 0.8, ease: "easeOut" }} />
+      {buah && (
+        <p className="mt-3 text-sm text-ink/75">
+          Bayi Ibu kira-kira sebesar <b className="font-semibold text-ink">{buah.nama}</b>
+          {sisaHari !== null && <>, {sisaHari ? `${sisaHari} hari lagi menuju HPL` : "sudah masuk HPL"}.</>}
+        </p>
+      )}
+      {nifas && <p className="mt-3 text-sm text-ink/75">Masa nifas berlangsung sampai hari ke-42 setelah melahirkan.</p>}
+      {penanda && (
+        <div className="mt-4">
+          <div className="relative h-2 overflow-hidden rounded-full bg-brand-soft">
+            <motion.div className="h-full rounded-full bg-brand" initial={{ width: 0 }} animate={{ width: `${Math.round(t.progres * 100)}%` }} transition={{ duration: 0.8, ease: "easeOut" }} />
+            {penanda.slice(1).map((p) => (
+              <span key={p.label} className="absolute inset-y-0 w-0.5 bg-surface" style={{ left: `${p.posisi * 100}%` }} aria-hidden />
+            ))}
+          </div>
+          <div className="relative mt-1.5 h-4 text-[11px] font-medium text-muted">
+            {penanda.map((p) => (
+              <span key={p.label} className="absolute top-0" style={{ left: `${p.posisi * 100}%` }}>
+                {p.label}
+              </span>
+            ))}
+            <span className="absolute right-0 top-0">{hamil ? "HPL" : "Hari 42"}</span>
+          </div>
         </div>
-        <div className="mt-1.5 flex justify-between text-[11px] font-medium text-muted">
-          {hamil ? (
-            <>
-              <span>T1</span>
-              <span>T2</span>
-              <span>T3</span>
-              <span>HPL{t.sumberHpl === "USG T1" ? " (USG)" : ""}</span>
-            </>
-          ) : (
-            <>
-              <span>Melahirkan</span>
-              <span>KF2</span>
-              <span>KF3</span>
-              <span>Hari 42</span>
-            </>
-          )}
-        </div>
-      </div>
+      )}
     </>
   );
   const kelas = "block rounded-2xl bg-surface p-4 shadow-[var(--shadow-kartu)]";
