@@ -37,8 +37,8 @@ function LayoutIbuIsi({ children }: { children: React.ReactNode }) {
 
   if (!siap || !u || u.peran !== "ibu") return <Memuat penuh />;
 
-  // Saat membaca flipbook (edukasi atau Buku KIA Saya), layar dipakai penuh tanpa menu bawah.
-  const baca = /^\/ibu\/(edukasi\/[^/]+|catatan\/buku)/.test(path);
+  // Saat membaca flipbook edukasi, layar dipakai penuh tanpa menu bawah.
+  const baca = /^\/ibu\/edukasi\/[^/]+/.test(path);
 
   return (
     <div className={cn("latar-ibu mx-auto min-h-dvh max-w-md", !baca && "pb-24")}>

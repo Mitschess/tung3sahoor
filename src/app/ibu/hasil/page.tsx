@@ -1,25 +1,23 @@
 "use client";
 
-import { Lock } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { GrafikBB, GrafikTfuDjj } from "@/components/grafik";
 import { KepalaHalaman } from "@/components/kepala";
-import { RiwayatTabel } from "@/components/riwayat";
 import { DaftarJadwal } from "@/components/tahap";
 import { JudulBagian, Kartu, Memuat } from "@/components/ui";
 import { useRingkasan } from "@/lib/hooks";
 import { usePengguna } from "@/lib/store";
 
-const TABEL_HAMIL = ["anc", "dokter_t1", "lab_t1", "preeklamsia", "dm", "dokter_t3", "rujukan"];
-const TABEL_NIFAS = ["persalinan", "bayi_lahir", "kf", "kn", "imunisasi"];
-
+/** Jadwal kunjungan dan grafik. Isi tiap pemeriksaan dibaca di Catatan supaya tidak tampil dua kali. */
 export default function Hasil() {
   const u = usePengguna();
   const r = useRingkasan(u?.ibuId);
   if (!r) return <Memuat />;
-  const nifas = r.tahap.set === "nifas";
+  const hamil = r.tahap.set === "hamil";
   return (
     <div className="space-y-6 px-4">
-      <KepalaHalaman judul="Hasil periksa" sub="Diisi tenaga kesehatan · Ibu hanya bisa melihat" kembali="/ibu" />
+      <KepalaHalaman judul={hamil ? "Jadwal & grafik" : "Jadwal kunjungan"} kembali="/ibu" />
 
       {r.jadwal.length > 0 && (
         <section>
@@ -28,7 +26,7 @@ export default function Hasil() {
         </section>
       )}
 
-      {r.tahap.set === "hamil" && (
+      {hamil && (
         <>
           <Kartu id="grafik" className="scroll-mt-20">
             <JudulBagian>Kenaikan berat badan</JudulBagian>
@@ -41,16 +39,13 @@ export default function Hasil() {
         </>
       )}
 
-      <section className="space-y-5">
-        {(nifas ? [...TABEL_NIFAS, ...TABEL_HAMIL] : TABEL_HAMIL).map((t) => (
-          <RiwayatTabel key={t} tabel={t} catatan={r.cari(t)} />
-        ))}
-      </section>
-
-      <p className="flex items-start gap-2 rounded-2xl bg-black/[0.03] p-4 text-xs text-muted">
-        <Lock className="mt-0.5 size-4 shrink-0" />
-        Hasil tripel eliminasi dan skrining kesehatan jiwa tidak ditampilkan di aplikasi untuk menjaga privasi Ibu. Bidan akan menjelaskannya langsung.
-      </p>
+      <Link href="/ibu/catatan" className="flex items-center gap-3 rounded-2xl bg-surface p-4 shadow-[var(--shadow-kartu)]">
+        <span className="min-w-0 flex-1">
+          <span className="block font-semibold">Lihat hasil tiap pemeriksaan</span>
+          <span className="block text-sm text-muted">Semua catatan dari bidan dan kader ada di Catatan.</span>
+        </span>
+        <ChevronRight className="size-5 shrink-0 text-muted" />
+      </Link>
     </div>
   );
 }
