@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import { Memuat } from "@/components/ui";
 import { useSiap } from "@/lib/hooks";
+import { useCatatJejak } from "@/lib/navigasi";
 import { usePengguna } from "@/lib/store";
 import { cn } from "@/lib/util";
 
@@ -30,6 +31,7 @@ function LayoutIbuIsi({ children }: { children: React.ReactNode }) {
   const u = usePengguna();
   const router = useRouter();
   const path = usePathname();
+  useCatatJejak();
 
   useEffect(() => {
     if (siap && (!u || u.peran !== "ibu")) router.replace(u ? "/app" : "/masuk");

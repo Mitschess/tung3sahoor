@@ -11,6 +11,7 @@ import { MATERI, TEMA, jumlahLembar, materiUntuk, type Materi, type Tema } from 
 import type { NamaGambar } from "@/data/gambar-kia";
 import { useRingkasan } from "@/lib/hooks";
 import { urlHalamanCetak } from "@/lib/kamus";
+import { tandaiGanti } from "@/lib/navigasi";
 import { usePengguna, useStore } from "@/lib/store";
 import { cn } from "@/lib/util";
 
@@ -26,7 +27,10 @@ export default function Edukasi() {
   // Tautan lama berbentuk /ibu/edukasi#slug langsung dibuka sebagai buku.
   useEffect(() => {
     const id = window.location.hash.slice(1);
-    if (id && MATERI.some((m) => m.slug === id)) router.replace(`/ibu/edukasi/${id}`);
+    if (id && MATERI.some((m) => m.slug === id)) {
+      tandaiGanti();
+      router.replace(`/ibu/edukasi/${id}`);
+    }
   }, [router]);
 
   if (!r) return <Memuat />;

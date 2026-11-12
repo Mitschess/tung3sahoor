@@ -8,6 +8,7 @@ import { Logo } from "@/components/logo";
 import { Memuat } from "@/components/ui";
 import { LABEL_PERAN, bolehIsi, bolehOcr } from "@/lib/akses";
 import { useSiap } from "@/lib/hooks";
+import { useCatatJejak } from "@/lib/navigasi";
 import { usePengguna, useStore } from "@/lib/store";
 import type { Pengguna } from "@/lib/types";
 import { cn, inisial } from "@/lib/util";
@@ -37,6 +38,7 @@ function LayoutStafIsi({ children }: { children: React.ReactNode }) {
   const keluar = useStore((s) => s.keluar);
   const router = useRouter();
   const path = usePathname();
+  useCatatJejak();
 
   useEffect(() => {
     if (siap && (!u || u.peran === "ibu")) router.replace(u ? "/ibu" : "/masuk");

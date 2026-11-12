@@ -6,6 +6,7 @@ import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from "rea
 import { TEMA, WARNA_TINJA, jumlahLembar, type ItemGambar, type Lembar, type Materi, type Tema } from "@/data/edukasi";
 import type { NamaGambar } from "@/data/gambar-kia";
 import { urlHalamanCetak } from "@/lib/kamus";
+import { tandaiGanti } from "@/lib/navigasi";
 import { cn } from "@/lib/util";
 import { GambarKia, rasio } from "./gambar-kia";
 
@@ -353,8 +354,9 @@ export function LembarPenutup({ m, berikut, ulang }: { m: Materi; berikut?: Mate
           ))}
         </ol>
         <div className="mt-auto shrink-0 space-y-2 pt-5">
+          {/* replace: buku berikutnya menggantikan buku ini, jadi tombol tutup tetap kembali ke halaman sebelum buku pertama. */}
           {berikut && (
-            <Link href={`/ibu/edukasi/${berikut.slug}`} className="flex items-center gap-3 rounded-2xl bg-white p-2.5 ring-1 ring-[#ece4d4]">
+            <Link href={`/ibu/edukasi/${berikut.slug}`} replace onClick={tandaiGanti} className="flex items-center gap-3 rounded-2xl bg-white p-2.5 ring-1 ring-[#ece4d4]">
               <span className={cn("grid size-12 shrink-0 place-items-center overflow-hidden rounded-xl", TEMA[berikut.tema].lembut)}>
                 <GambarKia nama={berikut.sampul} alt="" sizes="48px" className="h-full w-full object-cover" />
               </span>

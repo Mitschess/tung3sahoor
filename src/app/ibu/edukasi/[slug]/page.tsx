@@ -1,13 +1,14 @@
 "use client";
 
 import { BookX } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Flipbook } from "@/components/flipbook";
 import { LembarIsi, LembarPenutup, LembarSampul } from "@/components/lembar-materi";
 import { Kosong, Memuat, TautanTombol } from "@/components/ui";
 import { MATERI, TEMA, cariMateri, jumlahLembar, materiUntuk, type Materi } from "@/data/edukasi";
 import { useRingkasan } from "@/lib/hooks";
+import { useKembali } from "@/lib/navigasi";
 import { usePengguna, useStore } from "@/lib/store";
 
 export default function BacaMateri() {
@@ -31,7 +32,7 @@ export default function BacaMateri() {
 }
 
 function Buku({ m, berikut }: { m: Materi; berikut?: Materi }) {
-  const router = useRouter();
+  const tutup = useKembali("/ibu/edukasi");
   const catat = useStore((s) => s.catatBacaan);
   const total = jumlahLembar(m);
   // Lanjutkan dari lembar terjauh yang sudah dibaca, kecuali materi sudah selesai.
@@ -55,7 +56,7 @@ function Buku({ m, berikut }: { m: Materi; berikut?: Materi }) {
       label={`${t.bab} · Buku KIA`}
       warna={{ teks: t.teks, isi: t.pita }}
       onUbah={onUbah}
-      onTutup={() => router.push("/ibu/edukasi")}
+      onTutup={tutup}
       render={(i, ke) => (i === 0 ? <LembarSampul m={m} /> : i === total - 1 ? <LembarPenutup m={m} berikut={berikut} ulang={() => ke(0)} /> : <LembarIsi m={m} l={m.lembar[i - 1]} nomor={i + 1} />)}
     />
   );
