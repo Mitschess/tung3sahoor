@@ -1,6 +1,6 @@
 "use client";
 
-import { BellRing, BookMarked, Camera, Home, LogOut, UserPlus, Users } from "lucide-react";
+import { BellRing, Camera, Home, LogOut, UserPlus, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useEffect } from "react";
@@ -14,12 +14,11 @@ import { cn, inisial } from "@/lib/util";
 
 function menu(u: Pengguna) {
   return [
-    { href: "/app", label: "Beranda", ikon: Home, tampil: true },
-    { href: "/app/ibu", label: "Daftar ibu", ikon: Users, tampil: true },
-    { href: "/app/foto", label: "Foto Buku KIA", ikon: Camera, tampil: bolehOcr(u) },
-    { href: "/app/daftar", label: "Daftarkan ibu", ikon: UserPlus, tampil: bolehIsi(u, "ibu") },
-    { href: "/app/pengingat", label: "Pengingat", ikon: BellRing, tampil: u.peran !== "dokter" },
-    { href: "/app/kamus", label: "Kamus data", ikon: BookMarked, tampil: true },
+    { href: "/app", label: "Beranda", pendek: "Beranda", ikon: Home, tampil: true },
+    { href: "/app/ibu", label: "Daftar ibu", pendek: "Ibu", ikon: Users, tampil: true },
+    { href: "/app/foto", label: "Foto Buku KIA", pendek: "Foto", ikon: Camera, tampil: bolehOcr(u) },
+    { href: "/app/daftar", label: "Daftarkan ibu", pendek: "Daftarkan", ikon: UserPlus, tampil: bolehIsi(u, "ibu") },
+    { href: "/app/pengingat", label: "Pengingat", pendek: "Pengingat", ikon: BellRing, tampil: u.peran !== "dokter" },
   ].filter((m) => m.tampil);
 }
 
@@ -59,7 +58,10 @@ function LayoutStafIsi({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
         </nav>
-        <div className="mt-auto rounded-2xl bg-bg p-3">
+        <Link href="/app/kamus" className="mt-auto px-3 pb-3 text-xs font-medium text-muted hover:text-ink">
+          Kamus data (untuk pengembang)
+        </Link>
+        <div className="rounded-2xl bg-bg p-3">
           <div className="flex items-center gap-3">
             <span className="grid size-10 place-items-center rounded-full bg-brand text-sm font-bold text-white">{inisial(u.nama)}</span>
             <div className="min-w-0">
@@ -95,10 +97,10 @@ function LayoutStafIsi({ children }: { children: React.ReactNode }) {
         <main className="mx-auto max-w-5xl px-4 pb-28 pt-5 md:px-8 md:pb-10 md:pt-8">{children}</main>
         <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 px-2 pb-[max(env(safe-area-inset-bottom),8px)] pt-1.5 backdrop-blur md:hidden">
           <div className="flex justify-around">
-            {m.slice(0, 5).map(({ href, label, ikon: Ikon }) => (
+            {m.map(({ href, pendek, ikon: Ikon }) => (
               <Link key={href} href={href} className={cn("flex flex-col items-center gap-0.5 rounded-xl px-2 py-1 text-[10px] font-semibold", aktif(href) ? "text-brand" : "text-muted")}>
                 <Ikon className="size-5" />
-                {label.split(" ")[0]}
+                {pendek}
               </Link>
             ))}
           </div>
