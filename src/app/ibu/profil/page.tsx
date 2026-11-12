@@ -1,25 +1,23 @@
 "use client";
 
 import { ChevronRight, CreditCard, HeartHandshake, Info, LogOut, Phone, ShieldCheck, Users, type LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
-import { Baris, Memuat, Modal } from "@/components/ui";
+import type { ReactNode } from "react";
+import { Memuat } from "@/components/ui";
 import { useRingkasan } from "@/lib/hooks";
 import { usePengguna, useStore } from "@/lib/store";
-import { tampil } from "@/lib/tanggal";
-import { inisial } from "@/lib/util";
-
-type Lembar = "keluarga" | "privasi" | "tentang" | null;
+import { cn, inisial } from "@/lib/util";
 
 export default function Profil() {
   const u = usePengguna();
   const r = useRingkasan(u?.ibuId);
   const keluar = useStore((s) => s.keluar);
   const router = useRouter();
-  const [lembar, setLembar] = useState<Lembar>(null);
   if (!r) return <Memuat />;
   const p = r.ibu.profil;
   const k = r.ibu.keluarga;
+  const pendamping = k.nama_pendamping ? `${String(k.nama_pendamping)} (${String(k.hubungan ?? "pendamping")})` : "Belum diisi";
 
   return (
     <div className="space-y-6 px-4 pt-5">
@@ -42,13 +40,13 @@ export default function Profil() {
       </section>
 
       <Grup judul="Data Ibu">
-        <Baris2 ikon={Users} label="Suami / Keluarga" sub="Ikut menerima pengingat jadwal periksa" onClick={() => setLembar("keluarga")} />
+        <Baris2 ikon={Users} label="Suami / Keluarga" sub={pendamping} href="/ibu/profil/keluarga" />
         <Baris2 ikon={HeartHandshake} label={`Posyandu ${String(p.wilayah_posyandu)}`} sub={String(p.puskesmas_domisili ?? p.faskes_tk1 ?? "")} />
-        <Baris2 ikon={ShieldCheck} label="Privasi data" sub="Siapa saja yang bisa melihat data Ibu" onClick={() => setLembar("privasi")} />
+        <Baris2 ikon={ShieldCheck} label="Privasi data" sub="Siapa saja yang bisa melihat data Ibu" href="/ibu/profil/privasi" />
       </Grup>
 
       <Grup judul="Lainnya">
-        <Baris2 ikon={Info} label="Tentang MOMCARE" onClick={() => setLembar("tentang")} />
+        <Baris2 ikon={Info} label="Tentang MOMCARE" sub="Kegunaan, sumber isi, dan batasan" href="/ibu/profil/tentang" />
         <Baris2
           ikon={LogOut}
           label="Keluar"
@@ -58,40 +56,6 @@ export default function Profil() {
           }}
         />
       </Grup>
-
-      <Modal buka={lembar === "keluarga"} setBuka={() => setLembar(null)} judul="Suami / Keluarga" deskripsi="Ikut menerima pengingat jadwal periksa lewat WhatsApp.">
-        <Baris label="Nama">{String(k.nama_pendamping ?? "–")}</Baris>
-        <Baris label="Hubungan">{String(k.hubungan ?? "–")}</Baris>
-        <Baris label="Telepon">{String(k.telepon_pendamping ?? "–")}</Baris>
-        <Baris label="Golongan darah">{String(k.golongan_darah_pendamping ?? "–")}</Baris>
-        <p className="mt-3 text-xs text-muted">Pesan ke keluarga hanya berisi jadwal, tidak berisi hasil pemeriksaan. Perubahan data dilakukan oleh kader/bidan.</p>
-      </Modal>
-
-      <Modal buka={lembar === "privasi"} setBuka={() => setLembar(null)} judul="Privasi data">
-        <ul className="space-y-3 text-sm">
-          <li>
-            <b>Siapa yang melihat:</b> kader Posyandu {String(p.wilayah_posyandu)}, bidan wilayah, dan dokter puskesmas.
-          </li>
-          <li>
-            <b>Data sensitif</b> (tes HIV/sifilis/hepatitis B dan skrining kesehatan jiwa) hanya dilihat bidan/dokter dan tidak pernah dikirim ke keluarga.
-          </li>
-          <li>
-            <b>NIK</b> disimpan tersandi; yang tampil hanya 4 digit terakhir.
-          </li>
-          <li>
-            <b>Foto Buku KIA</b> dihapus setelah datanya dicek petugas.
-          </li>
-          <li>
-            Ibu menyetujui pada <b>{tampil(r.ibu.persetujuan.tanggal)}</b> (teks {r.ibu.persetujuan.versi}). Ibu boleh berhenti kapan saja tanpa memengaruhi pelayanan.
-          </li>
-        </ul>
-      </Modal>
-
-      <Modal buka={lembar === "tentang"} setBuka={() => setLembar(null)} judul="Tentang MOMCARE">
-        <p className="text-sm text-muted">
-          MOMCARE membantu Ibu, kader, bidan, dan dokter memakai isi Buku KIA Kemenkes 2024 sehari-hari: jadwal periksa, pemantauan, dan tanda bahaya. MOMCARE tidak menggantikan Buku KIA dan pemeriksaan tenaga kesehatan.
-        </p>
-      </Modal>
     </div>
   );
 }
@@ -119,13 +83,13 @@ function Baris2({ ikon: Ikon, label, sub, onClick, href }: { ikon: LucideIcon; l
   const kelas = "flex w-full items-center gap-4 px-4 py-4 text-left";
   if (href)
     return (
-      <a href={href} className={kelas}>
+      <Link href={href} className={cn(kelas, "transition active:bg-bg")}>
         {isi}
-      </a>
+      </Link>
     );
   if (onClick)
     return (
-      <button type="button" onClick={onClick} className={kelas}>
+      <button type="button" onClick={onClick} className={cn(kelas, "transition active:bg-bg")}>
         {isi}
       </button>
     );
