@@ -9,14 +9,13 @@ import { LogoMark } from "./logo";
 import { cn } from "@/lib/util";
 import type { Level } from "@/lib/types";
 
-type Varian = "utama" | "kedua" | "hantu" | "bahaya" | "garis" | "garisBiru";
+type Varian = "utama" | "kedua" | "hantu" | "bahaya" | "garis";
 const VARIAN: Record<Varian, string> = {
   utama: "bg-brand text-white hover:bg-brand-ink",
   kedua: "bg-brand-soft text-brand-ink hover:bg-[#d6e8fd]",
   hantu: "text-ink hover:bg-black/5",
   bahaya: "bg-merah text-white hover:brightness-95",
   garis: "border border-line bg-surface text-ink hover:bg-bg",
-  garisBiru: "border border-brand bg-surface text-brand hover:bg-brand-soft/50",
 };
 
 export const Tombol = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { varian?: Varian; kecil?: boolean; memuat?: boolean }>(
@@ -158,22 +157,6 @@ export function Memuat({ penuh }: { penuh?: boolean }) {
     <div role="status" aria-label="Memuat" className={cn("flex items-center justify-center", penuh ? "min-h-dvh" : "min-h-[50dvh]")}>
       <LogoMark className="size-14 animate-pulse" />
     </div>
-  );
-}
-
-/** Sakelar hidup/mati (mis. atur kartu status kesehatan). */
-export function Sakelar({ nyala, ubah, label }: { nyala: boolean; ubah: (v: boolean) => void; label: string }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={nyala}
-      aria-label={label}
-      onClick={() => ubah(!nyala)}
-      className={cn("relative h-7 w-12 shrink-0 rounded-full transition", nyala ? "bg-brand/40" : "bg-[#d5dbe3]")}
-    >
-      <span className={cn("absolute top-1/2 size-6 -translate-y-1/2 rounded-full shadow transition-all", nyala ? "left-[calc(100%-1.6rem)] bg-brand" : "left-0.5 bg-white")} />
-    </button>
   );
 }
 

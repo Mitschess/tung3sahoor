@@ -8,21 +8,19 @@ export interface Tugas {
   judul: string;
   teks: string;
   href: string;
-  nada: "brand" | "merah" | "kuning";
+  nada: "brand" | "kuning";
 }
 
 export function tugasHariIni(r: Ringkasan, now: Date): Tugas[] {
   const out: Tugas[] = [];
   const t = r.tahap;
 
-  if (r.peringatan.some((p) => p.level === "merah")) {
-    out.push({ id: "merah", judul: "Segera periksa ke Puskesmas", teks: "Ada tanda yang perlu dilihat bidan hari ini.", href: "/ibu/tanda-bahaya", nada: "merah" });
-  }
+  // Peringatan Merah tidak diulang di sini: beranda sudah menampilkannya sebagai kotak merah tersendiri.
 
   if (t.set === "hamil") {
     const minggu = t.ukMinggu ?? 0;
     const sudah = r.cari("pemantauan_hamil").some((c) => Number(c.data.minggu_kehamilan) === minggu);
-    if (!sudah) out.push({ id: "pantau", judul: `Isi pemantauan minggu ke-${minggu}`, teks: "Centang kondisi Ibu minggu ini (±1 menit).", href: "/ibu/pantau", nada: "brand" });
+    if (!sudah) out.push({ id: "pantau", judul: `Isi pemantauan minggu ke-${minggu}`, teks: "Ketuk gambar kondisi Ibu minggu ini (±1 menit).", href: "/ibu/pantau", nada: "brand" });
   }
   if (t.set === "nifas") {
     const h = t.hariNifas ?? 0;
@@ -48,7 +46,7 @@ export function tugasHariIni(r: Ringkasan, now: Date): Tugas[] {
     const p = terakhir(r.cari, "persiapan")?.data ?? {};
     const total = 10;
     const sudah = Object.values(p).filter((v) => v === true).length;
-    if (sudah < total) out.push({ id: "persiapan", judul: "Lengkapi persiapan melahirkan", teks: `${sudah} dari ${total} ceklis P4K sudah dicentang.`, href: "/ibu/persiapan", nada: (t.ukMinggu ?? 0) >= 36 ? "kuning" : "brand" });
+    if (sudah < total) out.push({ id: "persiapan", judul: "Lengkapi persiapan melahirkan", teks: `${sudah} dari ${total} persiapan sudah siap.`, href: "/ibu/persiapan", nada: (t.ukMinggu ?? 0) >= 36 ? "kuning" : "brand" });
   }
 
   return out.slice(0, 3);

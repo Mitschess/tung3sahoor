@@ -374,7 +374,7 @@ export const MATERI: Materi[] = [
           "Rencana KB setelah melahirkan.",
           "Stiker P4K ditempel di depan rumah.",
         ],
-        aksi: { label: "Centang persiapan Ibu", href: "/ibu/persiapan" },
+        aksi: { label: "Lihat persiapan Ibu", href: "/ibu/persiapan" },
         halaman: 18,
       },
     ],

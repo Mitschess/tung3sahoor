@@ -29,8 +29,6 @@ interface State {
   draf: DrafOcr[];
   status: Record<string, StatusPeringatan>;
   pengingat: LogPengingat[];
-  /** Preferensi tampilan per perangkat: kartu "Status Kesehatan" yang disembunyikan ibu. */
-  statusTersembunyi: string[];
   /** Ibu sudah menyetujui ringkasan syarat & privasi di perangkat ini. */
   setujuPrivasi: boolean;
   /** Lembar terjauh yang sudah dibaca per materi edukasi (indeks 0 = sampul), per perangkat. */
@@ -48,7 +46,6 @@ interface State {
   bukaLagiPeringatan: (id: string) => void;
   catatPengingat: (l: Omit<LogPengingat, "id" | "oleh" | "pada">) => void;
   resetDemo: () => void;
-  aturStatus: (tersembunyi: string[]) => void;
   setujuiPrivasi: () => void;
   catatBacaan: (slug: string, lembar: number) => void;
 }
@@ -94,7 +91,6 @@ export const useStore = create<State>()(
       draf: [],
       status: {},
       pengingat: [],
-      statusTersembunyi: [],
       setujuPrivasi: false,
       bacaan: {},
 
@@ -226,7 +222,6 @@ export const useStore = create<State>()(
         set({ pengingat: [{ ...l, id: uid("wa"), oleh: u.id, pada: new Date().toISOString() }, ...s.pengingat].slice(0, 200) });
       },
 
-      aturStatus: (tersembunyi) => set({ statusTersembunyi: tersembunyi }),
       setujuiPrivasi: () => set({ setujuPrivasi: true }),
       catatBacaan: (slug, lembar) => {
         const lama = get().bacaan[slug] ?? -1;
@@ -250,7 +245,6 @@ export const useStore = create<State>()(
         draf: s.draf,
         status: s.status,
         pengingat: s.pengingat,
-        statusTersembunyi: s.statusTersembunyi,
         setujuPrivasi: s.setujuPrivasi,
         bacaan: s.bacaan,
       }),
