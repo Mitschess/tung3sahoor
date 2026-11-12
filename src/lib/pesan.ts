@@ -14,7 +14,8 @@ export function pesanKunjungan(r: Ringkasan, ke: "ibu" | "pendamping"): string {
     : k
       ? `antara ${k.mulai.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}–${k.selesai.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`
       : "secepatnya";
-  const apa = k ? k.nama.toLowerCase() : "pemeriksaan";
+  // Hanya huruf pertama yang dikecilkan, supaya singkatan seperti "T3" dan "USG" tetap utuh.
+  const apa = k ? k.nama.charAt(0).toLowerCase() + k.nama.slice(1) : "pemeriksaan";
   const sapa = ke === "ibu" ? `Halo Bu ${nama}` : `Halo Bapak/Ibu, keluarga Bu ${nama}`;
   return `${sapa}, ini pengingat dari kader posyandu (MOMCARE). Jadwal ${apa} ${kapan}. Jangan lupa bawa Buku KIA ya. ${ke === "pendamping" ? "Mohon bantu dampingi Ibu. " : ""}Terima kasih 🙏`;
 }
