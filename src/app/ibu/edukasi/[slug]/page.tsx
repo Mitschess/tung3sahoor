@@ -56,7 +56,7 @@ function Buku({ m, berikut }: { m: Materi; berikut?: Materi }) {
       warna={{ teks: t.teks, isi: t.pita }}
       onUbah={onUbah}
       onTutup={() => router.push("/ibu/edukasi")}
-      render={(i, ke) => (i === 0 ? <LembarSampul m={m} /> : i === total - 1 ? <LembarPenutup m={m} berikut={berikut} ulang={() => ke(0)} /> : <LembarIsi m={m} l={m.lembar[i - 1]} />)}
+      render={(i, ke) => (i === 0 ? <LembarSampul m={m} /> : i === total - 1 ? <LembarPenutup m={m} berikut={berikut} ulang={() => ke(0)} /> : <LembarIsi m={m} l={m.lembar[i - 1]} nomor={i + 1} />)}
     />
   );
 }

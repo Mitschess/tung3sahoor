@@ -7,6 +7,8 @@ import { cn } from "@/lib/util";
 
 const DURASI = 0.85;
 const LENTUR = [0.45, 0.05, 0.25, 1] as const;
+/** Bentuk halaman: sudut tajam di sisi punggung (kiri), membulat di tepi luar (kanan). */
+const BENTUK = "rounded-l-[8px] rounded-r-[22px]";
 /** Seberapa miring garis lipatan di tengah balikan (bagian dari lebar halaman). */
 const MIRING = 0.14;
 
@@ -289,8 +291,8 @@ export function Flipbook({ jumlah, awal = 0, render, judul, label, warna = { tek
           {/* Tebal buku: lembar-lembar berikutnya mengintip di tepi kanan bawah. */}
           {!terakhir && (
             <>
-              <div className="absolute inset-0 translate-x-[7px] translate-y-[7px] rounded-[26px] bg-[#e9eef5]" />
-              <div className="absolute inset-0 translate-x-[3.5px] translate-y-[3.5px] rounded-[26px] bg-[#f3f6fa] shadow-sm" />
+              <div className={cn("absolute inset-0 translate-x-[7px] translate-y-[7px] bg-[#ebe8e1]", BENTUK)} />
+              <div className={cn("absolute inset-0 translate-x-[3.5px] translate-y-[3.5px] bg-[#f6f4ef] shadow-sm", BENTUK)} />
             </>
           )}
 
@@ -302,29 +304,31 @@ export function Flipbook({ jumlah, awal = 0, render, judul, label, warna = { tek
               data-lembar={k}
               style={{ zIndex: balik && k === balik.atas ? 3 : 1 }}
               className={cn(
-                "absolute inset-0 overflow-hidden rounded-[26px] bg-surface shadow-[0_18px_40px_-20px_rgb(23_60_110/0.45),0_0_0_1px_rgb(23_60_110/0.05)]",
+                BENTUK,
+                "absolute inset-0 overflow-hidden bg-[#fffdf9] shadow-[0_18px_40px_-20px_rgb(23_60_110/0.45),0_0_0_1px_rgb(23_60_110/0.05)]",
                 balik && "pointer-events-none select-none",
               )}
               aria-roledescription="lembar"
               aria-label={`Lembar ${k + 1} dari ${jumlah}`}
             >
-              <div className="h-full overflow-y-auto overscroll-contain">{render(k, ke)}</div>
+              {/* Lembar tidak digulir: isi lembar sendiri yang menyesuaikan ukuran halaman. */}
+              <div className="h-full overflow-hidden">{render(k, ke)}</div>
               {/* Lipatan tengah buku. */}
               <div className="pointer-events-none absolute inset-y-0 left-0 w-5 bg-gradient-to-r from-black/[0.06] to-transparent" />
             </article>
           ))}
 
           {/* Bayangan lipatan yang jatuh ke lembar di bawahnya. */}
-          <div className="pointer-events-none absolute inset-0 z-[2] overflow-hidden rounded-[26px]" aria-hidden>
+          <div className={cn("pointer-events-none absolute inset-0 z-[2] overflow-hidden", BENTUK)} aria-hidden>
             <div ref={bayang} className="absolute hidden bg-gradient-to-r from-[rgb(15_30_60/0.32)] via-[rgb(15_30_60/0.08)] to-transparent" />
           </div>
 
           {/* Sisi belakang kertas yang sedang dilipat. */}
-          <div className="pointer-events-none absolute inset-0 z-[4] overflow-hidden rounded-[26px]" aria-hidden>
+          <div className={cn("pointer-events-none absolute inset-0 z-[4] overflow-hidden", BENTUK)} aria-hidden>
             <div ref={lipat} className="absolute hidden">
               <div
                 ref={kertas}
-                className="absolute inset-0 bg-[#fbfcfd] [background-image:linear-gradient(to_left,rgb(20_40_70/0.20)_0px,rgb(20_40_70/0.05)_12px,rgb(255_255_255/0)_38px),linear-gradient(to_left,#eef1f5,#ffffff_22%,#f7f9fb_60%,#e6ebf1)]"
+                className="absolute inset-0 bg-[#fbf9f4] [background-image:linear-gradient(to_left,rgb(60_45_20/0.18)_0px,rgb(60_45_20/0.05)_12px,rgb(255_255_255/0)_38px),linear-gradient(to_left,#efebe3,#fffdf9_22%,#f8f5ef_60%,#e8e3d9)]"
               />
             </div>
           </div>

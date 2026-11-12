@@ -96,15 +96,8 @@ input[type="number"] {
   animation: pulse-ring 2s infinite;
 }
 
-/* Petunjuk "geser" di sampul flipbook edukasi. */
-@keyframes geser {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(-7px); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .pulse-merah { animation: none; }
-  [class*="animate-[geser"] { animation: none; }
 }
 
 /* Latar aplikasi ibu: putih bersih dengan semburat biru lembut di bagian atas. */
