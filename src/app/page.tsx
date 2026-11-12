@@ -3,7 +3,6 @@ import Link from "next/link";
 import { GambarKia } from "@/components/gambar-kia";
 import { Ilustrasi, type NamaIlustrasi } from "@/components/ilustrasi";
 import { Logo } from "@/components/logo";
-import { ringkasKamus } from "@/lib/kamus";
 
 const ALUR: { ikon: NamaIlustrasi; judul: string; teks: string }[] = [
   { ikon: "keluarga", judul: "Kader mendaftarkan ibu", teks: "Dengan persetujuan ibu. NIK disimpan sebagai hash, kader hanya melihat ibu di wilayah posyandunya." },
@@ -13,15 +12,14 @@ const ALUR: { ikon: NamaIlustrasi; judul: string; teks: string }[] = [
 ];
 
 export default function Beranda() {
-  const k = ringkasKamus();
   return (
     <main className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[620px] bg-[#eef5fe]" />
 
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <Logo />
-        <Link href="/masuk" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-ink/85">
-          Masuk demo
+        <Link href="/masuk?pilih" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-ink/85">
+          Coba demo
         </Link>
       </header>
 
@@ -36,15 +34,16 @@ export default function Beranda() {
               MOMCARE memastikan tidak ada ibu hamil dan bayi baru lahir di wilayah kader yang terlewat: dari pemeriksaan kehamilan K1–K6, persalinan, nifas, sampai bayi 28 hari.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/masuk" className="inline-flex h-12 items-center gap-2 rounded-full bg-brand px-6 font-semibold text-white shadow-[0_10px_30px_-10px_var(--brand)] hover:bg-brand-ink">
-                Coba sebagai ibu, kader, bidan, atau dokter <ArrowRight className="size-4" />
+              <Link href="/masuk?pilih" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand px-6 font-semibold text-white hover:bg-brand-ink">
+                Coba demo <ArrowRight className="size-4" />
               </Link>
             </div>
+            <p className="mt-3 text-sm text-muted">Tanpa kata sandi. Pilih akun ibu, kader, bidan, atau dokter.</p>
             <dl className="mt-10 grid max-w-md grid-cols-3 gap-4">
               {[
-                [String(k.jumlahTabel), "tabel kamus data"],
-                [String(k.jumlahKolom), "isian Buku KIA"],
-                ["4", "peran pengguna"],
+                ["6", "kali periksa hamil (K1–K6)"],
+                ["4", "kunjungan nifas (KF1–KF4)"],
+                ["3", "kunjungan bayi (KN1–KN3)"],
               ].map(([a, b]) => (
                 <div key={b}>
                   <dt className="text-3xl font-extrabold text-ink">{a}</dt>
@@ -58,11 +57,11 @@ export default function Beranda() {
             <div className="rounded-[2.2rem] bg-white p-3 shadow-[0_30px_60px_-30px_rgba(23,70,140,0.35)] ring-1 ring-line">
               <div className="relative overflow-hidden rounded-[1.7rem] bg-brand p-5 text-white">
                 <span className="absolute right-4 top-4 grid size-16 place-items-center overflow-hidden rounded-full bg-white">
-                  <GambarKia nama="buah-pepaya" alt="" sizes="80px" className="h-full w-full scale-[1.4] object-cover" />
+                  <GambarKia nama="buah-semangka" alt="" sizes="80px" className="h-full w-full scale-[1.4] object-cover" />
                 </span>
                 <p className="text-sm text-white/80">Halo, Bu Siti</p>
                 <p className="mt-1 text-2xl font-extrabold">Hamil 34 minggu</p>
-                <p className="text-sm text-white/85">Trimester 3 · sebesar pepaya</p>
+                <p className="text-sm text-white/85">Trimester 3 · bayi sebesar semangka</p>
                 <div className="mt-4 h-2 rounded-full bg-white/25">
                   <div className="h-2 w-[85%] rounded-full bg-white" />
                 </div>

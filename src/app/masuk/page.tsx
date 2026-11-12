@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowLeft, ChevronRight, Globe, RotateCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { ArrowLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { toast } from "sonner";
 import { GambarKia } from "@/components/gambar-kia";
 import { LogoMark } from "@/components/logo";
@@ -24,6 +24,15 @@ function potret(u: Pengguna): NamaGambar {
 }
 
 export default function Masuk() {
+  // Suspense diperlukan karena layar ini membaca URL (?pilih membuka pemilih akun langsung dari landing).
+  return (
+    <Suspense fallback={<Memuat penuh />}>
+      <MasukIsi />
+    </Suspense>
+  );
+}
+
+function MasukIsi() {
   const siap = useSiap();
   const pengguna = useStore((s) => s.pengguna);
   const masuk = useStore((s) => s.masuk);
@@ -31,10 +40,9 @@ export default function Masuk() {
   const setuju = useStore((s) => s.setujuPrivasi);
   const setujui = useStore((s) => s.setujuiPrivasi);
   const router = useRouter();
-  const [langkah, setLangkah] = useState<"sambutan" | "pilih">("sambutan");
+  const langsung = useSearchParams().has("pilih");
+  const [langkah, setLangkah] = useState<"sambutan" | "pilih">(langsung ? "pilih" : "sambutan");
   const [kelompok, setKelompok] = useState<Kelompok>("ibu");
-  const [daftar, setDaftar] = useState(false);
-  const [centang, setCentang] = useState(false);
 
   if (!siap) return <Memuat penuh />;
 
@@ -98,11 +106,8 @@ export default function Masuk() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col bg-surface px-6 pb-8">
-      <div className="mt-4 flex items-center justify-between">
+      <div className="mt-4">
         <TombolSos tandaBahaya={false} />
-        <button type="button" onClick={() => toast("Saat ini MOMCARE tersedia dalam Bahasa Indonesia.")} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-ink/70 px-3.5 text-sm font-medium">
-          <Globe className="size-4" /> Bahasa
-        </button>
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center py-8">
@@ -111,33 +116,12 @@ export default function Masuk() {
         <p className="mt-2 max-w-xs text-center text-[15px] text-muted">Teman Buku KIA untuk Ibu, kader, bidan, dan dokter.</p>
       </div>
 
-      <div className="space-y-3">
-        <Tombol className="w-full" onClick={() => setLangkah("pilih")}>
-          Masuk
-        </Tombol>
-        <Tombol varian="garisBiru" className="w-full" onClick={() => setDaftar(true)}>
-          Daftar
-        </Tombol>
-      </div>
+      <Tombol className="w-full" onClick={() => setLangkah("pilih")}>
+        Masuk
+      </Tombol>
+      <p className="mt-4 text-center text-sm text-muted">Belum terdaftar? Bawa Buku KIA ke kader posyandu, pendaftaran dilakukan bersama Ibu.</p>
 
-      <Modal buka={daftar} setBuka={setDaftar} judul="Pendaftaran lewat posyandu" deskripsi="Agar data cocok dengan Buku KIA, pendaftaran ibu dilakukan oleh kader atau bidan bersama Ibu.">
-        <ol className="space-y-2 text-sm">
-          <li>1. Bawa Buku KIA dan KTP ke posyandu/puskesmas.</li>
-          <li>2. Kader membacakan persetujuan, lalu Ibu menyetujui.</li>
-          <li>3. Kader menyalin identitas dan HPHT, lalu Ibu langsung bisa masuk.</li>
-        </ol>
-        <Tombol
-          className="mt-5 w-full"
-          onClick={() => {
-            const kader = pengguna.find((u) => u.peran === "kader");
-            if (kader) pilih(kader, "/app/daftar");
-          }}
-        >
-          Coba sebagai kader
-        </Tombol>
-      </Modal>
-
-      <Modal buka={!setuju} setBuka={() => undefined} tanpaTutup judul="Syarat & Ketentuan Penggunaan dan Pemberitahuan Privasi MOMCARE">
+      <Modal buka={!setuju} setBuka={() => undefined} tanpaTutup judul="Syarat penggunaan & privasi">
         <div className="space-y-3 text-[15px] leading-relaxed text-ink/85">
           <p>Sebelum memakai MOMCARE, mohon baca ringkasan berikut:</p>
           <ul className="list-disc space-y-1.5 pl-5 text-sm">
@@ -147,12 +131,8 @@ export default function Masuk() {
             <li>MOMCARE bukan layanan gawat darurat dan tidak menggantikan pemeriksaan tenaga kesehatan.</li>
             <li>Versi demo ini memakai data fiktif yang tersimpan di browser Anda saja.</li>
           </ul>
-          <label className="flex cursor-pointer items-start gap-3 pt-2">
-            <input type="checkbox" checked={centang} onChange={(e) => setCentang(e.target.checked)} className="mt-0.5 size-6 shrink-0 accent-[var(--brand)]" />
-            <span className="text-sm">Dengan menyatakan Setuju, saya menerima Syarat & Ketentuan Penggunaan dan Pemberitahuan Privasi MOMCARE.</span>
-          </label>
-          <Tombol className="w-full" disabled={!centang} onClick={setujui}>
-            Saya Setuju
+          <Tombol className="w-full" onClick={setujui}>
+            Saya setuju
           </Tombol>
         </div>
       </Modal>
