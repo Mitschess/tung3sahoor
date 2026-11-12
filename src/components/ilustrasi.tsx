@@ -56,37 +56,9 @@ function Papan({ aksen, muda }: { aksen: string; muda: string }) {
   );
 }
 
-function Kaki({ t }: { t: string }) {
-  return (
-    <g transform={t} fill={W.pink}>
-      <path d="M0-8.5C5-8.5 6.5-3 6 2c-.4 4-2.5 7-6 7-3.2 0-5.2-2.8-5.4-6.5C-5.8-3-4.5-8.5 0-8.5z" />
-      <circle cx="-6.1" cy="-7.6" r="1.15" />
-      <circle cx="-4.3" cy="-9.7" r="1.35" />
-      <circle cx="-1.8" cy="-11" r="1.55" />
-      <circle cx="1" cy="-11.5" r="1.75" />
-      <circle cx="4.4" cy="-10.5" r="2.45" />
-    </g>
-  );
-}
-
 const GAMBAR = {
   pantau: { latar: W.biruLatar, isi: <Papan aksen={W.biru} muda={W.biruMuda} /> },
   "pantau-nifas": { latar: W.unguLatar, isi: <Papan aksen={W.ungu} muda={W.unguMuda} /> },
-  hasil: {
-    latar: W.pinkLatar,
-    isi: (
-      <>
-        <path transform="translate(2.4 2.4)" d="M19 11h18l10 10v30a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4V15a4 4 0 0 1 4-4z" fill={W.pinkMuda} />
-        <path d="M19 11h18l10 10v30a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4V15a4 4 0 0 1 4-4z" fill={W.putih} />
-        <path d="M37 11v7a3 3 0 0 0 3 3h7z" fill={W.pinkMuda} />
-        <Jantung x={26} y={30} s={0.72} warna={W.pink} />
-        <rect x="33" y="24.5" width="8" height="2.6" rx="1.3" fill={W.pinkMuda} />
-        <rect x="33" y="29.5" width="5.5" height="2.6" rx="1.3" fill={W.pinkMuda} />
-        <rect x="20.5" y="39" width="20.5" height="2.6" rx="1.3" fill={W.pinkMuda} />
-        <rect x="20.5" y="44.5" width="13" height="2.6" rx="1.3" fill={W.pinkMuda} />
-      </>
-    ),
-  },
   persiapan: {
     latar: W.tealLatar,
     isi: (
@@ -98,20 +70,6 @@ const GAMBAR = {
         <path d="M11 30h42v4.5H11z" fill={W.tealTua} />
         <rect x="28.5" y="27.5" width="7" height="9.5" rx="2" fill={W.kuning} />
         <Jantung x={32} y={45} s={0.55} warna={W.putih} />
-      </>
-    ),
-  },
-  grafik: {
-    latar: W.unguLatar,
-    isi: (
-      <>
-        <rect x="13.4" y="16.4" width="42" height="36" rx="6" fill={W.unguMuda} />
-        <rect x="11" y="14" width="42" height="36" rx="6" fill={W.putih} />
-        <path d="M16 40 47 21v8L16 46.5z" fill={W.unguLatar} />
-        <path d="M17 43l8-6 7 2 13-14" fill="none" stroke={W.ungu} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="25" cy="37" r="2.5" fill={W.putih} stroke={W.ungu} strokeWidth="2.2" />
-        <circle cx="32" cy="39" r="2.5" fill={W.putih} stroke={W.ungu} strokeWidth="2.2" />
-        <circle cx="45" cy="25" r="2.9" fill={W.pink} />
       </>
     ),
   },
@@ -129,16 +87,6 @@ const GAMBAR = {
       </>
     ),
   },
-  gerak: {
-    latar: W.pinkLatar,
-    isi: (
-      <>
-        <Kaki t="translate(23.5 40) rotate(-14)" />
-        <Kaki t="translate(41 31) rotate(14) scale(-1 1)" />
-        <path d="M12 30c-1.6 2.6-1.6 5.6 0 8.2M51.5 41c1.6 2.6 1.6 5.6 0 8.2" fill="none" stroke={W.pink} strokeWidth="2.2" strokeLinecap="round" opacity=".45" />
-      </>
-    ),
-  },
   bayi: {
     latar: W.biruLatar,
     isi: (
@@ -153,16 +101,6 @@ const GAMBAR = {
         <circle cx="23.5" cy="45.5" r="2.4" fill={W.pink} opacity=".35" />
         <circle cx="40.5" cy="45.5" r="2.4" fill={W.pink} opacity=".35" />
         <path d="M30 48q2 1.8 4 0" fill="none" stroke={W.pinkTua} strokeWidth="1.8" strokeLinecap="round" />
-      </>
-    ),
-  },
-  asi: {
-    latar: W.kuningLatar,
-    isi: (
-      <>
-        <path transform="translate(2.4 2.4)" d="M32 10s-15 17.5-15 28a15 15 0 0 0 30 0c0-10.5-15-28-15-28z" fill={W.kuningMuda} />
-        <path d="M32 10s-15 17.5-15 28a15 15 0 0 0 30 0c0-10.5-15-28-15-28z" fill={W.putih} />
-        <Jantung x={32} y={41} s={0.82} warna={W.pink} />
       </>
     ),
   },
@@ -185,28 +123,6 @@ const GAMBAR = {
         <path d="M28.2 12.6a4.4 4.4 0 0 1 7.6 0l17.6 30.5a4.4 4.4 0 0 1-3.8 6.6H14.4a4.4 4.4 0 0 1-3.8-6.6z" fill={W.merah} />
         <rect x="29.6" y="23" width="4.8" height="15" rx="2.4" fill={W.putih} />
         <circle cx="32" cy="43.2" r="2.7" fill={W.putih} />
-      </>
-    ),
-  },
-  jiwa: {
-    latar: W.unguLatar,
-    isi: (
-      <>
-        <path d="M26 53v-8.5c-6-2.4-9.5-8-9.5-14.5 0-10 7-18 17-18 9 0 15 6.5 15 14.5v1.8l3 5.2c.6 1-.1 2.2-1.2 2.2h-1.8v4.3a3.8 3.8 0 0 1-3.8 3.8H41V53z" fill={W.ungu} />
-        <Jantung x={32.5} y={29.5} s={0.95} warna={W.putih} />
-        <circle cx="52.5" cy="15" r="2.2" fill={W.kuning} />
-        <circle cx="56" cy="22" r="1.4" fill={W.kuning} />
-      </>
-    ),
-  },
-  awan: {
-    latar: W.tealLatar,
-    isi: (
-      <>
-        <circle cx="40" cy="22" r="9" fill={W.kuning} />
-        <path transform="translate(0 2.2)" d="M21 47a8.5 8.5 0 0 1-1.2-16.9A11.5 11.5 0 0 1 41.6 28 9.5 9.5 0 0 1 44 47z" fill={W.tealMuda} />
-        <path d="M21 47a8.5 8.5 0 0 1-1.2-16.9A11.5 11.5 0 0 1 41.6 28 9.5 9.5 0 0 1 44 47z" fill={W.putih} />
-        <path d="M25.5 55.5a1.8 1.8 0 0 0 3.6 0c0-1.3-1.8-3.6-1.8-3.6s-1.8 2.3-1.8 3.6zM35.5 56.5a1.8 1.8 0 0 0 3.6 0c0-1.3-1.8-3.6-1.8-3.6s-1.8 2.3-1.8 3.6z" fill={W.teal} />
       </>
     ),
   },
@@ -348,77 +264,6 @@ const GAMBAR = {
           <rect key={`${x}${y}`} x={x} y={y} width="6" height="5" rx="1.2" fill={W.biruMuda} />
         ))}
         <path d="M27 52V42.5a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3V52z" fill={W.pink} />
-      </>
-    ),
-  },
-  bedong: {
-    latar: W.tealLatar,
-    isi: (
-      <g transform="rotate(-32 32 34)">
-        <rect x="20.5" y="22" width="23" height="35" rx="11.5" fill={W.teal} />
-        <path d="M21.5 41c6-3.4 15-4.2 21-2.6M22.5 48c6-3 13.5-3.4 19-1.8" fill="none" stroke={W.tealMuda} strokeWidth="2.2" strokeLinecap="round" />
-        <circle cx="32" cy="23.5" r="10" fill={W.tealTua} />
-        <circle cx="32" cy="24.5" r="7.4" fill={W.kulit} />
-        <path d="M27.8 24.6q1.6 1.5 3.2 0M33 24.6q1.6 1.5 3.2 0" fill="none" stroke={W.tinta} strokeWidth="1.5" strokeLinecap="round" />
-        <circle cx="27.6" cy="27.6" r="1.6" fill={W.pink} opacity=".35" />
-        <circle cx="36.4" cy="27.6" r="1.6" fill={W.pink} opacity=".35" />
-      </g>
-    ),
-  },
-  mandi: {
-    latar: W.unguLatar,
-    isi: (
-      <>
-        {[
-          [22, 24, 5],
-          [30.5, 19, 6],
-          [39, 25, 4],
-          [40, 13.5, 2.6],
-          [24.5, 13.5, 2.2],
-        ].map(([x, y, r]) => (
-          <circle key={`${x}${y}`} cx={x} cy={y} r={r} fill={W.putih} stroke={W.unguMuda} strokeWidth="1.6" />
-        ))}
-        <ellipse cx="47" cy="27.5" rx="4.4" ry="3.2" fill={W.kuning} />
-        <circle cx="49.5" cy="23.5" r="2.5" fill={W.kuning} />
-        <path d="M51.6 23.2l2.4.7-2.4 1z" fill="#f28b30" />
-        <rect x="17" y="48" width="4" height="7" rx="2" fill={W.unguTua} />
-        <rect x="43" y="48" width="4" height="7" rx="2" fill={W.unguTua} />
-        <path d="M12 34h40v4a13 13 0 0 1-13 13H25a13 13 0 0 1-13-13z" fill={W.ungu} />
-        <rect x="9" y="29.5" width="46" height="6" rx="3" fill={W.unguTua} />
-      </>
-    ),
-  },
-  toples: {
-    latar: W.tealLatar,
-    isi: (
-      <>
-        <rect x="21.4" y="19.4" width="26" height="35" rx="6" fill={W.tealMuda} />
-        <rect x="19" y="17" width="26" height="35" rx="6" fill={W.putih} />
-        <path d="M21.5 29h21v16.5a3.5 3.5 0 0 1-3.5 3.5H25a3.5 3.5 0 0 1-3.5-3.5z" fill="#fff0d4" />
-        <rect x="22" y="10.5" width="20" height="7.5" rx="2.5" fill={W.tealTua} />
-        <rect x="24" y="33.5" width="16" height="9.5" rx="2" fill={W.teal} />
-        <Jantung x={32} y={39.4} s={0.4} warna={W.putih} />
-        <rect x="23" y="20.5" width="2.6" height="6" rx="1.3" fill={W.tealLatar} />
-      </>
-    ),
-  },
-  telepon: {
-    latar: W.pinkLatar,
-    isi: (
-      <>
-        <path d="M49 21a8 8 0 0 1 0 10M53.5 17.5a13 13 0 0 1 0 17" fill="none" stroke={W.merah} strokeWidth="2.4" strokeLinecap="round" />
-        <rect x="18" y="8" width="26" height="48" rx="6" fill={W.tinta} />
-        <rect x="21" y="13.5" width="20" height="36" rx="3" fill={W.putih} />
-        <rect x="27" y="10" width="8" height="1.6" rx=".8" fill="#4a5873" />
-        <text x="31" y="30" textAnchor="middle" fontSize="10.5" fontWeight="800" fill={W.merah} fontFamily="inherit">
-          119
-        </text>
-        <circle cx="31" cy="40.5" r="4.4" fill="#16a34a" />
-        <path
-          transform="translate(28.1 37.6) scale(.26)"
-          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"
-          fill={W.putih}
-        />
       </>
     ),
   },
