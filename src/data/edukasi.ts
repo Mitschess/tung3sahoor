@@ -369,6 +369,14 @@ export const MATERI: Materi[] = [
           "Suami atau keluarga mendampingi periksa dan melahirkan.",
           "Tabungan atau dana cadangan untuk biaya persalinan.",
           "Kartu JKN, KTP, dan KK.",
+        ],
+        halaman: 18,
+      },
+      {
+        // Dipisah dari lembar sebelumnya supaya delapan butir tetap terbaca tanpa digulir di layar kecil.
+        judul: "Siapkan juga",
+        nada: "tips",
+        poin: [
           "Lebih dari 1 calon pendonor darah dengan golongan darah sama.",
           "Kendaraan yang siap kapan saja.",
           "Rencana KB setelah melahirkan.",
