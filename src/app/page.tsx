@@ -57,7 +57,7 @@ export default function Beranda() {
             <div className="rounded-[2.2rem] bg-white p-3 shadow-[0_30px_60px_-30px_rgba(23,70,140,0.35)] ring-1 ring-line">
               <div className="relative overflow-hidden rounded-[1.7rem] bg-brand p-5 text-white">
                 <span className="absolute right-4 top-4 grid size-16 place-items-center overflow-hidden rounded-full bg-white">
-                  <GambarKia nama="buah-semangka" alt="" sizes="80px" className="h-full w-full scale-[1.4] object-cover" />
+                  <GambarKia nama="janin-9" alt="" sizes="80px" className="h-full w-full object-cover" />
                 </span>
                 <p className="text-sm text-white/80">Halo, Bu Siti</p>
                 <p className="mt-1 text-2xl font-extrabold">Hamil 34 minggu</p>

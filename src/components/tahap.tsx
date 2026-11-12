@@ -9,18 +9,26 @@ import { cn } from "@/lib/util";
 import type { NamaGambar } from "@/data/gambar-kia";
 import { GambarKia } from "./gambar-kia";
 
-const BUAH: { m: number; nama: string; g: NamaGambar }[] = [
-  { m: 4, nama: "biji beras", g: "buah-beras" },
-  { m: 12, nama: "jeruk nipis", g: "buah-jeruk-nipis" },
-  { m: 16, nama: "apel", g: "buah-apel" },
-  { m: 24, nama: "jagung", g: "buah-jagung" },
-  { m: 30, nama: "pepaya", g: "buah-pepaya" },
-  { m: 99, nama: "semangka", g: "buah-semangka" },
+const BUAH: { m: number; nama: string }[] = [
+  { m: 4, nama: "biji beras" },
+  { m: 12, nama: "jeruk nipis" },
+  { m: 16, nama: "apel" },
+  { m: 24, nama: "jagung" },
+  { m: 30, nama: "pepaya" },
+  { m: 99, nama: "semangka" },
 ];
 
 /** Perbandingan ukuran bayi sesuai Buku KIA hlm. 4–19. */
 export function ukuranBayi(minggu: number) {
   return BUAH.find((b) => minggu <= b.m) ?? BUAH[BUAH.length - 1];
+}
+
+/** Gambaran janin dari Buku KIA hlm. 4, yang menggambar janin pada usia 1, 3, 6, dan 9 bulan. */
+function gambarJanin(minggu: number): NamaGambar {
+  if (minggu <= 6) return "janin-1";
+  if (minggu <= 16) return "janin-3";
+  if (minggu <= 28) return "janin-6";
+  return "janin-9";
 }
 
 export function KartuTahap({ t, href }: { t: Tahap; href?: string }) {
@@ -40,10 +48,9 @@ export function KartuTahap({ t, href }: { t: Tahap; href?: string }) {
             {buah && ` · bayi sebesar ${buah.nama}`}
           </p>
         </div>
-        {buah && (
-          <div className="size-16 shrink-0 overflow-hidden rounded-full bg-rose-soft" title={`Sebesar ${buah.nama}`}>
-            {/* Gambar buah dari Buku KIA; keterangan di bawah gambar dipotong supaya buahnya saja yang tampak. */}
-            <GambarKia nama={buah.g} alt={`Sebesar ${buah.nama}`} sizes="64px" className="h-full w-full scale-[1.45] object-cover object-[50%_30%]" />
+        {hamil && (
+          <div className="size-[72px] shrink-0 overflow-hidden rounded-full bg-[#fbebee]">
+            <GambarKia nama={gambarJanin(t.ukMinggu ?? 0)} alt="Gambaran janin di dalam kandungan" sizes="72px" className="h-full w-full object-cover" />
           </div>
         )}
         {t.set === "nifas" && (
