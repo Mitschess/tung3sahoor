@@ -4,10 +4,11 @@ import { BookOpen, ChevronRight, Siren } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { GambarKia, rasio } from "@/components/gambar-kia";
+import { GambarKia } from "@/components/gambar-kia";
 import { KepalaHalaman } from "@/components/kepala";
 import { Memuat, Tab } from "@/components/ui";
 import { MATERI, TEMA, jumlahLembar, materiUntuk, type Materi, type Tema } from "@/data/edukasi";
+import type { NamaGambar } from "@/data/gambar-kia";
 import { useRingkasan } from "@/lib/hooks";
 import { urlHalamanCetak } from "@/lib/kamus";
 import { usePengguna, useStore } from "@/lib/store";
@@ -83,9 +84,23 @@ export default function Edukasi() {
   );
 }
 
+/**
+ * Cara tiap ilustrasi dipasang di sampul. Gambar tegak (buah, depresi) diperbesar pada bendanya
+ * supaya tulisan di bawah gambar tidak ikut; gambar yang sangat lebar digeser ke tokoh utamanya.
+ */
+const POTONG: Partial<Record<NamaGambar, { gambar: string; latar?: string }>> = {
+  "buah-jeruk-nipis": { gambar: "object-contain scale-[1.8] origin-[50%_48%]", latar: "bg-[#fbebee]" },
+  "buah-jagung": { gambar: "object-contain scale-[1.6] origin-[50%_38%]", latar: "bg-[#fbebee]" },
+  "buah-semangka": { gambar: "object-contain scale-[1.45] origin-[50%_38%]", latar: "bg-[#fbebee]" },
+  depresi: { gambar: "object-contain scale-[1.2] origin-[50%_46%]", latar: "bg-[#ece8f0]" },
+  nifas: { gambar: "object-cover object-[41%_50%]" },
+  "bayi-baru-lahir": { gambar: "object-cover object-[36%_50%]" },
+  melahirkan: { gambar: "object-cover object-[35%_50%]" },
+};
+
 function Rak({ daftar, bacaan }: { daftar: Materi[]; bacaan: Record<string, number> }) {
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-x-5 gap-y-6 pr-1.5">
       {daftar.map((m) => (
         <SampulBuku key={m.slug} m={m} dibaca={bacaan[m.slug]} />
       ))}
@@ -93,32 +108,57 @@ function Rak({ daftar, bacaan }: { daftar: Materi[]; bacaan: Record<string, numb
   );
 }
 
-/** Sampul buku di rak: punggung buku berwarna sesuai bab, gambar dari Buku KIA, dan kemajuan baca. */
+/**
+ * Buku di rak: sampul tegak dengan panel judul berwarna bab, ilustrasi Buku KIA di bawahnya,
+ * punggung buku di kiri, tepi halaman di kanan, dan pita pembatas bila sudah selesai dibaca.
+ */
 function SampulBuku({ m, dibaca }: { m: Materi; dibaca?: number }) {
   const t = TEMA[m.tema];
   const total = jumlahLembar(m);
   const selesai = dibaca !== undefined && dibaca >= total - 1;
-  const persen = dibaca ? Math.round(((dibaca + 1) / total) * 100) : 0;
+  const sedang = !selesai && !!dibaca;
+  const potong = POTONG[m.sampul];
   return (
-    <Link href={`/ibu/edukasi/${m.slug}`} className="group relative flex flex-col overflow-hidden rounded-[18px] rounded-l-[6px] bg-surface shadow-[var(--shadow-kartu)] transition active:scale-[0.98]">
-      <span className={cn("absolute inset-y-0 left-0 z-10 w-2", t.pita)} />
-      <span className="absolute inset-y-0 left-2 z-10 w-px bg-black/10" />
-      <div className={cn("ml-2 grid h-28 place-items-center overflow-hidden", t.lembut)}>
-        <GambarKia nama={m.sampul} alt="" sizes="45vw" className={cn(rasio(m.sampul) < 1 ? "h-28 w-auto" : "h-28 w-full object-cover")} />
-      </div>
-      <div className="ml-2 flex flex-1 flex-col p-3">
-        <span className={cn("text-[10px] font-bold uppercase tracking-wider", t.teks)}>{m.kategori}</span>
-        <span className="mt-0.5 line-clamp-2 text-[15px] font-bold leading-snug">{m.judul}</span>
-        <span className={cn("mt-auto pt-2 text-xs", selesai ? "font-semibold text-hijau" : "text-muted")}>{selesai ? "Sudah dibaca" : `${total} lembar · hlm. ${m.halaman}`}</span>
-        <span className="mt-2 block h-1 overflow-hidden rounded-full bg-black/[0.07]">
-          <span className={cn("block h-full rounded-full", selesai ? "bg-hijau" : t.pita)} style={{ width: `${selesai ? 100 : persen}%` }} />
+    <Link href={`/ibu/edukasi/${m.slug}`} className="group block">
+      <span className="relative block aspect-[3/4.1] transition duration-200 group-hover:-translate-y-1 group-active:scale-[0.97]">
+        {/* Tepi halaman yang terlihat dari samping kanan buku. */}
+        <span className="absolute inset-y-[6px] -right-[5px] w-[10px] rounded-r-[4px] bg-[repeating-linear-gradient(to_right,#ffffff_0,#ffffff_1.5px,#d5dbe4_1.5px,#d5dbe4_2.5px)] shadow-[1px_2px_4px_rgb(23_60_110/0.18)]" />
+
+        <span className={cn("absolute inset-0 flex flex-col overflow-hidden rounded-l-[5px] rounded-r-[11px] shadow-[0_14px_22px_-14px_rgb(23_60_110/0.6),0_1px_3px_rgb(23_60_110/0.22)]", t.pita)}>
+          <span className="flex flex-1 flex-col pb-2 pl-[22px] pr-3 pt-3.5">
+            <span className="text-[9.5px] font-bold uppercase tracking-[0.13em] text-white/75">{m.kategori}</span>
+            <span className="mt-1 line-clamp-3 text-[15px] font-extrabold leading-[1.18] text-white">{m.judul}</span>
+          </span>
+          <span className={cn("relative block h-[55%] shrink-0 overflow-hidden", potong?.latar ?? "bg-white")}>
+            <GambarKia nama={m.sampul} alt="" sizes="45vw" className={cn("h-full w-full", potong?.gambar ?? "object-cover")} />
+          </span>
+          {/* Punggung buku: bidang lebih gelap, garis lipatan, dan bayangan lekukan. */}
+          <span className="absolute inset-y-0 left-0 w-[11px] bg-black/[0.17]" />
+          <span className="absolute inset-y-0 left-[11px] w-px bg-white/30" />
+          <span className="absolute inset-y-0 left-3 w-1.5 bg-gradient-to-r from-black/[0.14] to-transparent" />
         </span>
-      </div>
-      {selesai && (
-        <span className="absolute right-3 top-0 z-10 h-9 w-6 bg-hijau shadow-sm [clip-path:polygon(0_0,100%_0,100%_100%,50%_78%,0_100%)]" title="Sudah dibaca">
-          <span className="sr-only">Sudah dibaca</span>
-        </span>
-      )}
+
+        {selesai && <span className="absolute -top-[3px] right-4 h-10 w-[18px] bg-[#f5b50f] shadow-[0_2px_3px_rgb(0_0_0/0.22)] [clip-path:polygon(0_0,100%_0,100%_100%,50%_76%,0_100%)]" />}
+      </span>
+
+      <span className="mt-3 block pl-0.5">
+        {selesai ? (
+          <span className="text-xs font-semibold text-hijau">Sudah dibaca</span>
+        ) : sedang ? (
+          <>
+            <span className="text-xs font-semibold text-ink">
+              Lembar {dibaca + 1} dari {total}
+            </span>
+            <span className="mt-1.5 block h-1 overflow-hidden rounded-full bg-black/[0.08]">
+              <span className={cn("block h-full rounded-full", t.pita)} style={{ width: `${Math.round(((dibaca + 1) / total) * 100)}%` }} />
+            </span>
+          </>
+        ) : (
+          <span className="text-xs text-muted">
+            {total} lembar · hlm. {m.halaman}
+          </span>
+        )}
+      </span>
     </Link>
   );
 }
