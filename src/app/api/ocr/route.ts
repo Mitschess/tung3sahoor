@@ -1,11 +1,12 @@
 /**
  * OCR tabel Buku KIA → draf isian kamus data.
  * - Dengan GEMINI_API_KEY: foto dibaca model Gemini (vision) dengan keluaran JSON terstruktur.
- * - Tanpa kunci: mode demo mengembalikan contoh hasil (ditandai jelas "demo") agar alur tetap bisa diuji.
+ * - Tanpa kunci: server tidak membaca apa pun; klien membaca foto di perangkat dengan Tesseract (src/lib/ocr-lokal.ts).
  * Hasil SELALU berupa draf; data baru tersimpan setelah kader/nakes mengonfirmasi di aplikasi.
  * Kolom sensitif (tripel eliminasi, kesehatan jiwa) sengaja tidak diekstrak.
  */
 import { GoogleGenAI } from "@google/genai";
+import { connection } from "next/server";
 import { KOLOM_SENSITIF, kamus, validasiNilai, type Kolom } from "@/lib/kamus";
 
 export const maxDuration = 60;
@@ -80,23 +81,10 @@ function bersihkan(tabel: string, hasil: Record<string, unknown>, yakin: Record<
   return { hasil: outH, yakin: outY };
 }
 
-function demo(tabel: string, ke?: string) {
-  const hariIni = new Date().toISOString().slice(0, 10);
-  const dua = new Date(Date.now() + 14 * 864e5).toISOString().slice(0, 10);
-  if (tabel === "kf")
-    return {
-      hasil: { kf_ke: Number(ke ?? 2), tanggal: hariIni, tempat: "Puskesmas Sukamaju", kondisi_umum: true, td_sistolik: 120, td_diastolik: 80, suhu_c: 36.9, nadi: 82, napas: 18, lokhia_perdarahan: "Normal", jalan_lahir: "Normal", kontraksi_tfu: "Normal", payudara_asi: "tidak normal", vit_a: true, konseling: true },
-      yakin: { kf_ke: 0.97, tanggal: 0.9, tempat: 0.8, kondisi_umum: 0.95, td_sistolik: 0.92, td_diastolik: 0.71, suhu_c: 0.88, nadi: 0.66, napas: 0.83, lokhia_perdarahan: 0.9, jalan_lahir: 0.9, kontraksi_tfu: 0.86, payudara_asi: 0.74, vit_a: 0.95, konseling: 0.93 },
-    };
-  if (tabel === "kn")
-    return {
-      hasil: { kn_ke: ke ?? "KN2", tanggal_jam: new Date().toISOString(), tempat: "Puskesmas Sukamaju", bb_g: 3150, pb_cm: 50, lk_cm: 34.5, menyusu: true, tali_pusat: "Baik", tanda_bahaya: false, kuning: false, vit_k1: true, salep_mata: true, hb0: true, shk: true },
-      yakin: { kn_ke: 0.96, tanggal_jam: 0.82, tempat: 0.8, bb_g: 0.91, pb_cm: 0.77, lk_cm: 0.69, menyusu: 0.94, tali_pusat: 0.88, tanda_bahaya: 0.9, kuning: 0.87, vit_k1: 0.95, salep_mata: 0.95, hb0: 0.95, shk: 0.8 },
-    };
-  return {
-    hasil: { kunjungan_ke: Number(ke ?? 5), tanggal: hariIni, tempat: "Posyandu Melati", bb_kg: 61.5, lila_cm: 24, td_sistolik: 130, td_diastolik: 85, tfu_cm: 30, letak_janin: "Kepala", djj: 142, status_imunisasi_td: "T4", konseling: true, ttd_mms: true, protein_urine: "Negatif", catatan: "Keluhan pegal punggung, edukasi posisi tidur miring kiri", tanggal_kembali: dua },
-    yakin: { kunjungan_ke: 0.98, tanggal: 0.93, tempat: 0.81, bb_kg: 0.95, lila_cm: 0.9, td_sistolik: 0.91, td_diastolik: 0.72, tfu_cm: 0.64, letak_janin: 0.86, djj: 0.88, status_imunisasi_td: 0.79, konseling: 0.94, ttd_mms: 0.94, protein_urine: 0.83, catatan: 0.7, tanggal_kembali: 0.89 },
-  };
+/** Mesin yang tersedia. Klien menanyakannya lebih dulu supaya foto tidak dikirim ke server bila tidak ada kunci AI. */
+export async function GET() {
+  await connection();
+  return Response.json({ mesin: process.env.GEMINI_API_KEY ? "gemini" : "perangkat" });
 }
 
 export async function POST(req: Request) {
@@ -119,9 +107,7 @@ export async function POST(req: Request) {
   if (m[2].length * 0.75 > MAKS_BYTE) return Response.json({ pesan: "Gambar terlalu besar (maks 6 MB)." }, { status: 413 });
 
   const kunci = process.env.GEMINI_API_KEY;
-  if (!kunci) {
-    return Response.json({ mode: "demo", ...demo(tabel, kunjungan) });
-  }
+  if (!kunci) return Response.json({ pesan: "Server tidak memiliki kunci AI. Foto dibaca di perangkat." }, { status: 503 });
 
   const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
   const def = kamus.tabel[tabel];

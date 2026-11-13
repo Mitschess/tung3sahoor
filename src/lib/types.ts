@@ -62,7 +62,8 @@ export interface DrafOcr {
   fotoDataUrl: string;
   hasil: Data;
   yakin: Record<string, number>;
-  mode: "gemini" | "demo";
+  /** "tesseract": dibaca di perangkat. "demo" hanya ada pada draf lama. */
+  mode: "gemini" | "tesseract" | "demo";
   model?: string;
   dibuat_oleh: string;
   dibuat_pada: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, CheckCircle2, ImageUp, Loader2, ScanLine, ShieldCheck, Sparkles, Trash2, TriangleAlert } from "lucide-react";
+import { Camera, CheckCircle2, ImageUp, Loader2, ScanLine, ScanText, ShieldCheck, Trash2, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useRef, useState } from "react";
@@ -51,7 +51,7 @@ function Foto() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <KepalaHalaman judul="Foto Buku KIA" sub="Potret tabel pemeriksaan → AI membaca → Anda cek & konfirmasi. Tidak ada yang tersimpan sebelum dikonfirmasi." />
+      <KepalaHalaman judul="Foto Buku KIA" sub="Potret tabel pemeriksaan, lalu cek hasil bacaannya. Tidak ada yang tersimpan sebelum Anda konfirmasi." kembali={false} />
       <Unggah rs={rs} ibuAwal={sp.get("ibu") ?? undefined} />
       <section>
         <JudulBagian>Draf menunggu konfirmasi {draf.length ? `· ${draf.length}` : ""}</JudulBagian>
@@ -104,6 +104,34 @@ function ItemDraf({ d, nama }: { d: DrafOcr; nama: string }) {
   );
 }
 
+/**
+ * Membaca foto dengan mesin yang tersedia: Gemini di server bila ada kuncinya, selain itu Tesseract di perangkat.
+ * Bila Gemini gagal, foto tetap dibaca di perangkat supaya petugas tidak perlu mengulang.
+ */
+async function bacaFoto(foto: string, tabel: string, ke: string, padaProses: (p: number) => void): Promise<Pick<DrafOcr, "hasil" | "yakin" | "mode" | "model">> {
+  const mesin = await fetch("/api/ocr")
+    .then((r) => r.json())
+    .then((j: { mesin?: string }) => j.mesin)
+    .catch(() => "perangkat");
+  if (mesin === "gemini") {
+    try {
+      const res = await fetch("/api/ocr", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tabel, gambar: foto, kunjungan: ke }) });
+      const json = await res.json();
+      if (res.ok) return { hasil: json.hasil ?? {}, yakin: json.yakin ?? {}, mode: "gemini", model: json.model };
+      if (res.status !== 502 && res.status !== 503) throw new Error(json.pesan ?? "Gagal membaca foto");
+    } catch (e) {
+      if (e instanceof Error && e.name !== "TypeError") throw e;
+    }
+  }
+  try {
+    const { bacaDiPerangkat } = await import("@/lib/ocr-lokal");
+    const { hasil, yakin } = await bacaDiPerangkat(foto, tabel, ke, padaProses);
+    return { hasil: hasil as DrafOcr["hasil"], yakin, mode: "tesseract", model: "Tesseract" };
+  } catch {
+    throw new Error("Foto tidak bisa dibaca di perangkat ini. Periksa koneksi internet, atau isi manual.");
+  }
+}
+
 function opsiKunjungan(tabel: string): { nilai: string; label: string }[] {
   if (tabel === "anc") return [1, 2, 3, 4, 5, 6].map((n) => ({ nilai: String(n), label: `K${n}` }));
   if (tabel === "kf") return [1, 2, 3, 4].map((n) => ({ nilai: String(n), label: `KF${n}` }));
@@ -129,6 +157,7 @@ function Unggah({ rs, ibuAwal }: { rs: Ringkasan[]; ibuAwal?: string }) {
   const [ke, setKe] = useState(() => kunjunganBerikutnya(r, tabelAwal));
   const [foto, setFoto] = useState<string | null>(null);
   const [proses, setProses] = useState<"diam" | "kompres" | "baca">("diam");
+  const [persen, setPersen] = useState<number | null>(null);
   const inputKamera = useRef<HTMLInputElement>(null);
   const inputBerkas = useRef<HTMLInputElement>(null);
 
@@ -161,18 +190,19 @@ function Unggah({ rs, ibuAwal }: { rs: Ringkasan[]; ibuAwal?: string }) {
     if (!foto || !r) return;
     setProses("baca");
     try {
-      const res = await fetch("/api/ocr", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tabel, gambar: foto, kunjungan: ke }) });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.pesan ?? "Gagal membaca foto");
+      const json = await bacaFoto(foto, tabel, ke, setPersen);
       // Simpan miniatur yang lebih kecil untuk perbandingan saat konfirmasi (hemat penyimpanan perangkat).
       const mini = await kompres(await (await fetch(foto)).blob(), 1100, 0.7);
       const d = tambahDraf({ ibuId: r.ibu.id, tabel, fotoDataUrl: mini, hasil: json.hasil ?? {}, yakin: json.yakin ?? {}, mode: json.mode, model: json.model });
-      toast.success(json.mode === "demo" ? "Mode demo: contoh hasil dibuat (tanpa kunci AI)" : "Foto terbaca. Silakan cek hasilnya.");
+      const terbaca = Object.keys(json.hasil).length - 1;
+      if (json.mode === "tesseract" && terbaca <= 0) toast.warning("Tidak ada isian yang dikenali dari foto ini. Isi manual sambil melihat fotonya.");
+      else toast.success(`${Math.max(terbaca, 0)} isian terbaca. Silakan cek dengan bukunya.`);
       router.push(`/app/foto?draf=${d.id}`);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
       setProses("diam");
+      setPersen(null);
     }
   };
 
@@ -216,7 +246,7 @@ function Unggah({ rs, ibuAwal }: { rs: Ringkasan[]; ibuAwal?: string }) {
         <ul className="space-y-1.5 rounded-2xl bg-bg p-3 text-xs text-muted">
           <li className="flex gap-2"><Camera className="size-3.5 shrink-0" /> Foto tegak lurus, satu halaman penuh, cahaya cukup tanpa bayangan.</li>
           <li className="flex gap-2"><ShieldCheck className="size-3.5 shrink-0" /> Foto dikompres di perangkat (maks 1600 px) dan dihapus setelah data dikonfirmasi.</li>
-          <li className="flex gap-2"><TriangleAlert className="size-3.5 shrink-0" /> Kotak kuning = AI kurang yakin. Wajib dicek dengan buku aslinya.</li>
+          <li className="flex gap-2"><TriangleAlert className="size-3.5 shrink-0" /> Kotak kuning = bacaan kurang yakin. Wajib dicek dengan buku aslinya.</li>
         </ul>
       </div>
 
@@ -234,7 +264,7 @@ function Unggah({ rs, ibuAwal }: { rs: Ringkasan[]; ibuAwal?: string }) {
           {proses !== "diam" && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-surface/80 text-sm font-semibold backdrop-blur-sm">
               <Loader2 className="size-6 animate-spin text-brand" />
-              {proses === "kompres" ? "Mengompres foto…" : "AI sedang membaca tulisan…"}
+              {proses === "kompres" ? "Mengompres foto…" : persen === null ? "Membaca foto…" : `Membaca foto di perangkat… ${Math.round(persen * 100)}%`}
             </div>
           )}
         </div>
@@ -250,7 +280,7 @@ function Unggah({ rs, ibuAwal }: { rs: Ringkasan[]; ibuAwal?: string }) {
           </Tombol>
         </div>
         <Tombol type="button" onClick={baca} disabled={!foto || proses !== "diam"} memuat={proses === "baca"}>
-          <Sparkles className="size-4" /> Baca dengan AI
+          <ScanText className="size-4" /> Baca foto
         </Tombol>
       </div>
     </Kartu>
@@ -283,10 +313,14 @@ function Konfirmasi({ d, r }: { d: DrafOcr; r: Ringkasan }) {
   return (
     <div className="space-y-5">
       <KepalaHalaman judul={`Konfirmasi: ${def.judul}`} sub={`${String(r.ibu.profil.nama)} · difoto oleh ${namaPengguna(d.dibuat_oleh)} · ${tampilWaktu(d.dibuat_pada)}`} kembali="/app/foto" />
-      <div className={d.mode === "demo" ? "rounded-2xl bg-kuning-soft px-4 py-3 text-sm text-kuning" : "rounded-2xl bg-brand-soft/60 px-4 py-3 text-sm text-brand-ink"}>
+      <div className={d.mode === "gemini" ? "rounded-2xl bg-brand-soft/60 px-4 py-3 text-sm text-brand-ink" : "rounded-2xl bg-kuning-soft px-4 py-3 text-sm text-ink/85"}>
         {d.mode === "demo" ? (
           <>
-            <b>Mode demo.</b> Server belum memiliki <code>GEMINI_API_KEY</code>, jadi isian di bawah adalah <b>contoh</b>, bukan hasil membaca foto Anda.
+            <b>Draf contoh.</b> Isian di bawah bukan hasil membaca foto Anda. Hapus draf ini dan foto ulang.
+          </>
+        ) : d.mode === "tesseract" ? (
+          <>
+            Dibaca di perangkat ini (Tesseract), foto tidak dikirim ke server. Tulisan tangan sering salah terbaca, jadi <b>semua isian perlu dicek</b> dan yang kosong diisi manual.
           </>
         ) : (
           <>
