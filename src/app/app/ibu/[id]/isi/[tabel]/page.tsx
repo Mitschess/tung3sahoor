@@ -1,6 +1,5 @@
 "use client";
 
-import { Info } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
@@ -119,14 +118,10 @@ function Isi() {
   return (
     <div className="mx-auto max-w-3xl">
       <KepalaHalaman judul={def.judul} sub={`${String(r.ibu.profil.nama)} · ${r.tahap.label} · diisi oleh ${def.diisi_oleh.toLowerCase()}`} kembali={`/app/ibu/${r.ibu.id}`} />
-      <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl bg-brand-soft/60 px-4 py-3 text-sm text-brand-ink">
-        <Info className="size-4 shrink-0" />
-        <span className="flex-1">
-          Form dibangkitkan dari kamus data ({Object.keys(def.kolom).length} kolom). Angka di luar rentang wajar ditolak untuk dicek ulang; batas medis dipakai oleh mesin peringatan.
-          {targetUbah ? " Perubahan dicatat di riwayat." : ""}
-        </span>
+      <p className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-sm text-muted">
+        <span>{targetUbah ? "Perubahan dicatat di riwayat." : "Salin sesuai yang tertulis di Buku KIA."}</span>
         {halamanCetak && halamanCetak > 0 && <TautanBuku halaman={halamanCetak} />}
-      </div>
+      </p>
       {tabel === "preeklamsia" && <PratinjauPreeklamsia />}
       <Kartu>
         <KamusForm tabel={tabel} nilaiAwal={nilaiAwal} otomatis={otomatis} kolom={kolom} onSimpan={onSimpan} onBatal={() => router.back()} memuat={memuat} labelSimpan={targetUbah ? "Simpan perubahan" : "Simpan"} />

@@ -1,7 +1,8 @@
 "use client";
 
-import { BellRing, History, Info } from "lucide-react";
+import { BellRing, History } from "lucide-react";
 import Link from "next/link";
+import { tahapSingkat } from "@/components/baris-ibu";
 import { KepalaHalaman } from "@/components/kepala";
 import { TombolWa } from "@/components/tombol-wa";
 import { JudulBagian, Kartu, Kosong, Lencana } from "@/components/ui";
@@ -21,11 +22,7 @@ export default function HalamanPengingat() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <KepalaHalaman judul="Pengingat kunjungan" sub="Kirim lewat WhatsApp ke ibu dan suami/keluarga: H-2, hari H, dan H+2 bila belum datang." />
-      <p className="flex gap-2 rounded-2xl bg-brand-soft/60 px-4 py-3 text-sm text-brand-ink">
-        <Info className="mt-0.5 size-4 shrink-0" />
-        Tombol membuka WhatsApp dengan pesan siap kirim (tautan wa.me, tanpa biaya API). Pesan hanya berisi jadwal & ajakan periksa. Hasil lab, HIV/sifilis/hepatitis B, dan kesehatan jiwa tidak pernah ikut terkirim.
-      </p>
+      <KepalaHalaman judul="Pengingat kunjungan" sub="Kirim lewat WhatsApp ke ibu dan keluarga. Pesan hanya berisi jadwal, tanpa hasil pemeriksaan." kembali={false} />
 
       <section>
         <JudulBagian>
@@ -36,15 +33,17 @@ export default function HalamanPengingat() {
         {daftar.length ? (
           <div className="space-y-2">
             {daftar.map((p) => (
-              <Kartu key={p.id} className="flex flex-wrap items-center gap-3 p-4">
-                <div className="min-w-0 flex-1">
+              <Kartu key={p.id} className="flex flex-wrap items-center gap-x-4 gap-y-3 p-4">
+                <div className="min-w-[14rem] flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Link href={`/app/ibu/${p.r.ibu.id}`} className="font-bold hover:text-brand">
                       {String(p.r.ibu.profil.nama)}
                     </Link>
-                    <Lencana warna={p.mendesak ? "merah" : "brand"}>{p.label}</Lencana>
+                    <Lencana warna={p.mendesak ? "kuning" : "brand"}>{p.label}</Lencana>
                   </div>
-                  <p className="text-sm text-muted">{p.teks}</p>
+                  <p className="text-sm text-muted">
+                    {tahapSingkat(p.r)} · {p.teks}
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <TombolWa r={p.r} ke="ibu" />
@@ -69,7 +68,7 @@ export default function HalamanPengingat() {
             {terkirim.slice(0, 30).map((l) => (
               <div key={l.id} className="px-4 py-3 text-sm">
                 <p>
-                  <b>{nama(l.ibuId)}</b> → {l.ke === "ibu" ? "ibu" : "pendamping"} · <span className="text-muted">{tampilWaktu(l.pada)} oleh {namaPengguna(l.oleh)}</span>
+                  <b>{nama(l.ibuId)}</b> <span className="text-muted">· dikirim ke {l.ke === "ibu" ? "ibu" : "pendamping"} · {tampilWaktu(l.pada)} oleh {namaPengguna(l.oleh)}</span>
                 </p>
                 <p className="mt-0.5 line-clamp-2 text-xs text-muted">{l.pesan}</p>
               </div>

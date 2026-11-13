@@ -2,11 +2,15 @@
 
 import { ChevronDown, Pencil, ScanLine } from "lucide-react";
 import Link from "next/link";
+import { bolehLihatKolom } from "@/lib/akses";
 import { namaPengguna } from "@/lib/hooks";
 import { kamus } from "@/lib/kamus";
+import { WARNA_TANDA, tandaiNilai, tandaUtama } from "@/lib/nilai-catatan";
+import { usePengguna } from "@/lib/store";
 import { tampil, tampilWaktu } from "@/lib/tanggal";
 import type { Catatan } from "@/lib/types";
 import { TampilCatatan } from "./kamus-form";
+import { cn } from "@/lib/util";
 import { TautanBuku } from "./ui";
 
 export function judulCatatan(c: Catatan): string {
@@ -36,6 +40,7 @@ export function judulCatatan(c: Catatan): string {
 
 export function RiwayatTabel({ tabel, catatan, hrefUbah }: { tabel: string; catatan: Catatan[]; hrefUbah?: (c: Catatan) => string | null }) {
   const def = kamus.tabel[tabel];
+  const u = usePengguna();
   if (!catatan.length) return null;
   const hlmCetak = def.halaman_pdf[0] ? (def.halaman_pdf[0] - 2) * 2 : undefined;
   return (
@@ -47,15 +52,29 @@ export function RiwayatTabel({ tabel, catatan, hrefUbah }: { tabel: string; cata
       <div className="divide-y divide-line overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-kartu)]">
       {[...catatan].reverse().map((c) => {
         const ubah = hrefUbah?.(c);
+        // Nilai di luar batas ditandai, sama seperti yang dilihat ibu di Catatan.
+        const tandai = tandaiNilai(tabel, c.data, (k) => bolehLihatKolom(u, k));
+        const utama = tandaUtama(tandai);
         return (
           <details key={c.id} className="group">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3">
-              <span className="flex-1 text-sm font-semibold">{judulCatatan(c)}</span>
+              <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="text-sm font-semibold">{judulCatatan(c)}</span>
+                {utama && (
+                  <span className={cn("inline-flex max-w-full items-center gap-1.5 rounded-full px-2 py-0.5 text-[11.5px] font-semibold", WARNA_TANDA[utama.level])}>
+                    <span className="size-1.5 shrink-0 rounded-full bg-current" />
+                    <span className="truncate">
+                      {utama.judul}
+                      {utama.lain ? ` +${utama.lain}` : ""}
+                    </span>
+                  </span>
+                )}
+              </span>
               {c.meta.sumber === "foto (OCR)" && <ScanLine className="size-4 text-brand" aria-label="Dari foto Buku KIA" />}
               <ChevronDown className="size-4 text-muted transition group-open:rotate-180" />
             </summary>
             <div className="border-t border-dashed border-line bg-bg/40 px-4 pb-4 pt-2">
-              <TampilCatatan tabel={tabel} data={c.data} />
+              <TampilCatatan tabel={tabel} data={c.data} tandai={tandai} />
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted">
                 <span>
                   Diisi {namaPengguna(c.meta.dibuat_oleh)} · {c.meta.sumber}

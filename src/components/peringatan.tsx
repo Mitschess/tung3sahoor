@@ -1,16 +1,15 @@
 "use client";
 
-import { CheckCircle2, ChevronDown, Lock, MessageCircle, RotateCcw, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ChevronDown, Lock, RotateCcw, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { bolehTutupPeringatan } from "@/lib/akses";
 import { kamus } from "@/lib/kamus";
 import { namaPengguna, type Ringkasan } from "@/lib/hooks";
-import { pesanMerah } from "@/lib/pesan";
 import { usePengguna, useStore } from "@/lib/store";
 import { tampilWaktu } from "@/lib/tanggal";
 import type { Peringatan } from "@/lib/types";
-import { cn, tautanWa } from "@/lib/util";
+import { cn } from "@/lib/util";
 import { KamusForm } from "./kamus-form";
 import { Kosong, Lencana, Masukan, Modal, TautanBuku, TitikLevel, Tombol } from "./ui";
 
@@ -68,17 +67,14 @@ export function ItemPeringatan({ p, r, ringkas }: { p: Peringatan; r: Ringkasan;
   const catatan = useStore((s) => s.catatan);
   const simpan = useStore((s) => s.simpan);
   const tutup = useStore((s) => s.tutupPeringatan);
-  const catatPengingat = useStore((s) => s.catatPengingat);
   const [modalTL, setModalTL] = useState(false);
   const [modalTutup, setModalTutup] = useState(false);
   const [alasan, setAlasan] = useState("");
   const tl = catatan.filter((c) => c.tabel === "tindak_lanjut" && c.data.peringatan_id === p.id);
   const staf = u && u.peran !== "ibu";
-  const wa = tautanWa(r.ibu.profil.telepon, pesanMerah(r, "ibu"));
-  const waKel = tautanWa(r.ibu.keluarga.telepon_pendamping, pesanMerah(r, "pendamping"));
 
   return (
-    <div className={cn("rounded-2xl border bg-surface p-4", p.level === "merah" ? "border-merah/30" : "border-kuning/30")}>
+    <div className={cn("rounded-2xl bg-surface p-4 shadow-[var(--shadow-kartu)] ring-1", p.level === "merah" ? "ring-merah/30" : "ring-kuning/30")}>
       <div className="flex items-start gap-3">
         <TitikLevel level={p.level} className="mt-1.5" />
         <div className="min-w-0 flex-1">
@@ -115,31 +111,9 @@ export function ItemPeringatan({ p, r, ringkas }: { p: Peringatan; r: Ringkasan;
               <Tombol kecil varian="kedua" onClick={() => setModalTL(true)}>
                 Catat tindak lanjut
               </Tombol>
-              {p.level === "merah" && !p.sensitif && wa && (
-                <a
-                  href={wa}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => catatPengingat({ ibuId: r.ibu.id, ke: "ibu", telepon: String(r.ibu.profil.telepon), pesan: pesanMerah(r, "ibu") })}
-                  className="inline-flex h-9 items-center gap-1.5 rounded-full border border-line px-3.5 text-sm font-semibold hover:bg-bg"
-                >
-                  <MessageCircle className="size-4 text-hijau" /> WA ibu
-                </a>
-              )}
-              {p.level === "merah" && !p.sensitif && waKel && (
-                <a
-                  href={waKel}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => catatPengingat({ ibuId: r.ibu.id, ke: "pendamping", telepon: String(r.ibu.keluarga.telepon_pendamping), pesan: pesanMerah(r, "pendamping") })}
-                  className="inline-flex h-9 items-center gap-1.5 rounded-full border border-line px-3.5 text-sm font-semibold hover:bg-bg"
-                >
-                  <MessageCircle className="size-4 text-hijau" /> WA keluarga
-                </a>
-              )}
               {bolehTutupPeringatan(u) ? (
                 <Tombol kecil varian="garis" onClick={() => setModalTutup(true)}>
-                  <CheckCircle2 className="size-4" /> Tutup
+                  <CheckCircle2 className="size-4" /> Tutup peringatan
                 </Tombol>
               ) : (
                 <span className="self-center text-xs text-muted">Ditutup oleh bidan/dokter</span>

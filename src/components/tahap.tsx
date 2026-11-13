@@ -43,7 +43,8 @@ const PENANDA_NIFAS = [
   { label: "Hari 28", posisi: 28 / 42 },
 ];
 
-export function KartuTahap({ t, href }: { t: Tahap; href?: string }) {
+/** `petugas`: tampilan untuk kader/nakes, tanpa kalimat perbandingan ukuran bayi yang ditujukan ke ibu. */
+export function KartuTahap({ t, href, petugas }: { t: Tahap; href?: string; petugas?: boolean }) {
   const hamil = t.set === "hamil";
   const nifas = t.set === "nifas";
   const buah = hamil ? ukuranBayi(t.ukMinggu ?? 0) : null;
@@ -97,13 +98,14 @@ export function KartuTahap({ t, href }: { t: Tahap; href?: string }) {
           </div>
         )}
       </div>
-      {buah && (
+      {petugas && sisaHari !== null && <p className="mt-3 text-sm text-ink/75">{sisaHari ? `${sisaHari} hari lagi menuju HPL.` : "Sudah masuk HPL."}</p>}
+      {buah && !petugas && (
         <p className="mt-3 text-sm text-ink/75">
           Bayi Ibu kira-kira sebesar <b className="font-semibold text-ink">{buah.nama}</b>
           {sisaHari !== null && <>, {sisaHari ? `${sisaHari} hari lagi menuju HPL` : "sudah masuk HPL"}.</>}
         </p>
       )}
-      {nifas && <p className="mt-3 text-sm text-ink/75">Masa nifas berlangsung sampai hari ke-42 setelah melahirkan.</p>}
+      {nifas && !petugas && <p className="mt-3 text-sm text-ink/75">Masa nifas berlangsung sampai hari ke-42 setelah melahirkan.</p>}
       {penanda && (
         <div className="mt-4">
           <div className="relative h-2 overflow-hidden rounded-full bg-brand-soft">

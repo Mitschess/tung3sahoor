@@ -20,7 +20,7 @@ export interface StatusKesehatan {
 const fmt = (n: number, d = 1) => n.toLocaleString("id-ID", { maximumFractionDigits: d });
 
 /** Catatan terbaru (urut tanggal) yang punya nilai untuk kolom tertentu. */
-function terbaru(r: Ringkasan, tabel: string[], kolom: string) {
+export function terbaru(r: Ringkasan, tabel: string[], kolom: string) {
   let hasil: { v: unknown; tanggal?: unknown } | undefined;
   let kunci = "";
   for (const t of tabel) {
