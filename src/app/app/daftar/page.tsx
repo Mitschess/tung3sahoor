@@ -54,7 +54,7 @@ export default function DaftarkanIbu() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <KepalaHalaman judul="Daftarkan ibu" sub="Salin dari halaman identitas Buku KIA. Hanya butuh beberapa menit." kembali="/app/ibu" />
+      <KepalaHalaman judul="Daftarkan ibu" sub="Salin dari halaman identitas Buku KIA" kembali="/app/ibu" />
 
       <ol className="mb-5 grid grid-cols-4 gap-2">
         {LANGKAH.map((l, i) => (
@@ -110,7 +110,7 @@ export default function DaftarkanIbu() {
             NIK ibu
             <Masukan inputMode="numeric" maxLength={20} value={nik} onChange={(e) => setNik(e.target.value)} placeholder="16 digit" className={cn("mt-1.5", nikSalah && "border-merah")} />
             <span className={cn("mt-1 flex items-center gap-1 text-xs font-normal", nikSalah ? "text-merah" : "text-muted")}>
-              <Lock className="size-3" /> {nikSalah ? `NIK harus 16 digit (sekarang ${nikBersih.length}).` : "Disimpan sebagai hash SHA-256; yang tampil hanya 4 digit terakhir."}
+              <Lock className="size-3" /> {nikSalah ? `NIK harus 16 digit (sekarang ${nikBersih.length}).` : "NIK disamarkan; yang tampil hanya 4 digit terakhir."}
             </span>
           </label>
           <KamusForm
