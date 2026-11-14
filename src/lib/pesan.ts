@@ -17,11 +17,11 @@ export function pesanKunjungan(r: Ringkasan, ke: "ibu" | "pendamping"): string {
   // Hanya huruf pertama yang dikecilkan, supaya singkatan seperti "T3" dan "USG" tetap utuh.
   const apa = k ? k.nama.charAt(0).toLowerCase() + k.nama.slice(1) : "pemeriksaan";
   const sapa = ke === "ibu" ? `Halo Bu ${nama}` : `Halo Bapak/Ibu, keluarga Bu ${nama}`;
-  return `${sapa}, ini pengingat dari kader posyandu (MOMCARE). Jadwal ${apa} ${kapan}. Jangan lupa bawa Buku KIA ya. ${ke === "pendamping" ? "Mohon bantu dampingi Ibu. " : ""}Terima kasih 🙏`;
+  return `${sapa}, ini pengingat dari kader posyandu (Rangkul). Jadwal ${apa} ${kapan}. Jangan lupa bawa Buku KIA ya. ${ke === "pendamping" ? "Mohon bantu dampingi Ibu. " : ""}Terima kasih 🙏`;
 }
 
 export function pesanMerah(r: Ringkasan, ke: "ibu" | "pendamping"): string {
   const nama = namaDepan(r.ibu.profil.nama);
   const sapa = ke === "ibu" ? `Bu ${nama}` : `Bapak/Ibu keluarga Bu ${nama}`;
-  return `${sapa}, dari catatan Buku KIA ada hal yang perlu segera diperiksa oleh bidan hari ini. Mohon segera ke ${r.ibu.profil.faskes_tk1 ?? "Puskesmas"} atau hubungi bidan. Bila ada perdarahan, kejang, atau sesak, langsung ke fasilitas kesehatan terdekat. (MOMCARE)`;
+  return `${sapa}, dari catatan Buku KIA ada hal yang perlu segera diperiksa oleh bidan hari ini. Mohon segera ke ${r.ibu.profil.faskes_tk1 ?? "Puskesmas"} atau hubungi bidan. Bila ada perdarahan, kejang, atau sesak, langsung ke fasilitas kesehatan terdekat. (Rangkul)`;
 }

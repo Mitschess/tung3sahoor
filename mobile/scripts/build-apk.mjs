@@ -1,6 +1,6 @@
-// Membuat APK rilis MOMCARE Ibu di komputer ini (tanpa EAS): `npm run build:apk`.
+// Membuat APK rilis Rangkul di komputer ini (tanpa EAS): `npm run build:apk`.
 // Butuh Android SDK (ANDROID_HOME) dan JDK 17+ (JAVA_HOME). Bila JAVA_HOME kosong di Windows,
-// JDK bawaan Android Studio dipakai. Hasil: dist/momcare-ibu.apk.
+// JDK bawaan Android Studio dipakai. Hasil: dist/rangkul.apk.
 // Catatan: APK ditandatangani dengan kunci debug, cukup untuk demo dan dipasang langsung, bukan untuk Play Store.
 import { execSync, spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
@@ -87,6 +87,6 @@ const apk = path.join(
   "app-release.apk",
 );
 mkdirSync(path.join(akar, "dist"), { recursive: true });
-const tujuan = path.join(akar, "dist", "momcare-ibu.apk");
+const tujuan = path.join(akar, "dist", "rangkul.apk");
 copyFileSync(apk, tujuan);
 console.log(`\nAPK siap: ${tujuan}`);

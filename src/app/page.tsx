@@ -31,7 +31,7 @@ export default function Beranda() {
               Buku KIA yang tidak berhenti <span className="text-brand">di kertas.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted">
-              MOMCARE memastikan tidak ada ibu hamil dan bayi baru lahir di wilayah kader yang terlewat: dari pemeriksaan kehamilan K1–K6, persalinan, nifas, sampai bayi 28 hari.
+              Rangkul memastikan tidak ada ibu hamil dan bayi baru lahir di wilayah kader yang terlewat: dari pemeriksaan kehamilan K1–K6, persalinan, nifas, sampai bayi 28 hari.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/masuk?pilih" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand px-6 font-semibold text-white hover:bg-brand-ink">
@@ -114,7 +114,7 @@ export default function Beranda() {
           <div className="rounded-3xl bg-ink p-6 text-white md:col-span-2">
             <h2 className="text-2xl font-extrabold">Mengapa sampai bayi 28 hari dulu?</h2>
             <p className="mt-3 text-white/75">
-              Buku KIA menulis bahwa kematian ibu tertinggi terjadi pada masa setelah melahirkan, dan dua pertiga kematian balita di Indonesia terjadi pada 28 hari pertama. Karena itu lapisan pertama MOMCARE
+              Buku KIA menulis bahwa kematian ibu tertinggi terjadi pada masa setelah melahirkan, dan dua pertiga kematian balita di Indonesia terjadi pada 28 hari pertama. Karena itu lapisan pertama Rangkul
               mencakup kehamilan T1–T3, melahirkan, nifas 42 hari, dan bayi 0–28 hari. Struktur data sudah disiapkan sampai anak 6 tahun.
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function Beranda() {
       </section>
 
       <footer className="mx-auto max-w-6xl px-5 pb-10 text-xs text-muted">
-        Isi medis mengikuti Buku Kesehatan Ibu dan Anak, Kementerian Kesehatan RI 2024. MOMCARE tidak berafiliasi dengan Kemenkes. Tim TUNG3SAHOOR · Logicodix 2026.
+        Isi medis mengikuti Buku Kesehatan Ibu dan Anak, Kementerian Kesehatan RI 2024. Rangkul tidak berafiliasi dengan Kemenkes. Tim TUNG3SAHOOR · Logicodix 2026.
       </footer>
     </main>
   );

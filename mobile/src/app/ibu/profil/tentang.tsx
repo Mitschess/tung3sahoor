@@ -13,20 +13,20 @@ const KEGUNAAN: { gambar: NamaIlustrasi; judul: string; teks: string }[] = [
   { gambar: "buku", judul: "Belajar dari buku bergambar", teks: "Materi Buku KIA sesuai tahap Ibu." },
 ];
 
-/** Tentang MOMCARE: apa gunanya, dari mana isinya, dan batasannya. */
+/** Tentang Rangkul: apa gunanya, dari mana isinya, dan batasannya. */
 export default function Tentang() {
   return (
-    <Layar jarak={24} kepala={<Kepala judul="Tentang MOMCARE" kembali="/ibu/profil" />}>
+    <Layar jarak={24} kepala={<Kepala judul="Tentang Rangkul" kembali="/ibu/profil" />}>
       <Kartu style={{ alignItems: "center", paddingHorizontal: 20, paddingVertical: 24 }}>
         <LogoMark ukuran={64} />
         <Teks w={800} s={24} style={{ marginTop: 12, letterSpacing: -0.3 }}>
-          MOMCARE
+          Rangkul
         </Teks>
         <Teks s={14} c={W.muted}>
           Buku KIA yang tidak berhenti di kertas
         </Teks>
         <Teks s={15} lh={23} c="rgba(31,42,55,0.8)" style={{ marginTop: 16, textAlign: "center" }}>
-          MOMCARE membantu Ibu, kader, bidan, dan dokter memakai isi Buku KIA setiap hari, dari masa hamil sampai bayi berusia 28 hari.
+          Rangkul membantu Ibu, kader, bidan, dan dokter memakai isi Buku KIA setiap hari, dari masa hamil sampai bayi berusia 28 hari.
         </Teks>
       </Kartu>
 
@@ -75,7 +75,7 @@ export default function Tentang() {
       <View style={{ flexDirection: "row", gap: 12, borderRadius: 16, backgroundColor: W.kuningSoft, padding: 16 }}>
         <TriangleAlert size={20} color={W.kuning} style={{ marginTop: 1 }} />
         <Teks s={14} lh={20} c="rgba(31,42,55,0.8)" style={{ flex: 1 }}>
-          MOMCARE tidak menggantikan Buku KIA dan pemeriksaan tenaga kesehatan. Bila ada tanda bahaya, segera ke fasilitas kesehatan terdekat.
+          Rangkul tidak menggantikan Buku KIA dan pemeriksaan tenaga kesehatan. Bila ada tanda bahaya, segera ke fasilitas kesehatan terdekat.
         </Teks>
       </View>
 

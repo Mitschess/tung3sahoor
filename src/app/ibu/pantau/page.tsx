@@ -200,7 +200,7 @@ function FormLembar({ lembar, ibuId, sekarang, catatan }: { lembar: Lembar; ibuI
               <p className={cn("flex items-center gap-2 font-bold", hasil.merah.length ? "text-merah" : "text-kuning")}>
                 <CircleAlert className="size-5" /> {hasil.merah.length ? "Segera ke Puskesmas hari ini" : "Periksakan pada kunjungan terdekat"}
               </p>
-              <p className="mt-1 text-sm">Kader dan bidan Ibu sudah diberi tahu lewat MOMCARE. {hasil.merah.length ? "Bila perdarahan, kejang, atau sesak, langsung ke fasilitas kesehatan terdekat." : ""}</p>
+              <p className="mt-1 text-sm">Kader dan bidan Ibu sudah diberi tahu lewat Rangkul. {hasil.merah.length ? "Bila perdarahan, kejang, atau sesak, langsung ke fasilitas kesehatan terdekat." : ""}</p>
             </>
           ) : (
             <div className="flex items-center gap-3">

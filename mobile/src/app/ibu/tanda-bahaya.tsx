@@ -20,7 +20,7 @@ export default function TandaBahaya() {
           </Teks>
         </View>
         <Teks s={14} lh={20} c="rgba(255,255,255,0.92)" style={{ marginTop: 4 }}>
-          Jangan menunggu jadwal periksa. Segera ke fasilitas kesehatan terdekat. MOMCARE bukan layanan gawat darurat.
+          Jangan menunggu jadwal periksa. Segera ke fasilitas kesehatan terdekat. Rangkul bukan layanan gawat darurat.
         </Teks>
         <Pressable onPress={() => Linking.openURL("tel:119")} style={({ pressed }) => ({ marginTop: 16, alignSelf: "flex-start", height: 44, flexDirection: "row", alignItems: "center", gap: 8, borderRadius: 22, backgroundColor: "#fff", paddingHorizontal: 20, opacity: pressed ? 0.85 : 1 })}>
           <Phone size={16} color={W.merah} />

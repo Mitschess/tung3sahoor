@@ -1,5 +1,5 @@
 /**
- * Mesin peringatan dini MOMCARE (spesifikasi bagian 5).
+ * Mesin peringatan dini Rangkul (spesifikasi bagian 5).
  * Merah  = bidan/nakes diberi tahu hari itu juga, keluarga dihubungi.
  * Kuning = dicek/dikonfirmasi pada kunjungan terdekat.
  * Hijau  = sesuai jadwal (tidak ada peringatan terbuka).

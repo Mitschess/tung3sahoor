@@ -3,9 +3,14 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { aturPelaporGalat } from "@/lib/store";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSiap } from "@/lib/hooks";
 import { W } from "~/tema";
+import { kabar } from "~/ui/dasar";
+
+// Galat saat menyimpan ke Supabase di latar belakang ditampilkan sebagai kabar singkat.
+aturPelaporGalat((m) => kabar(m, true));
 
 void SplashScreen.preventAutoHideAsync();
 

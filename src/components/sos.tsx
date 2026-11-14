@@ -6,7 +6,7 @@ import { useState } from "react";
 import { cn } from "@/lib/util";
 import { Modal } from "./ui";
 
-/** Tombol SOS: jalan pintas ke 119 dan daftar tanda bahaya. MOMCARE bukan layanan gawat darurat. */
+/** Tombol SOS: jalan pintas ke 119 dan daftar tanda bahaya. Rangkul bukan layanan gawat darurat. */
 export function TombolSos({ className, tandaBahaya = true }: { className?: string; tandaBahaya?: boolean }) {
   const [buka, setBuka] = useState(false);
   return (
@@ -42,7 +42,7 @@ export function TombolSos({ className, tandaBahaya = true }: { className?: strin
             <ChevronRight className="size-5 text-merah" />
           </Link>
           )}
-          <p className="text-center text-xs text-muted">MOMCARE bukan layanan gawat darurat. Segera ke Puskesmas atau Rumah Sakit terdekat.</p>
+          <p className="text-center text-xs text-muted">Rangkul bukan layanan gawat darurat. Segera ke Puskesmas atau Rumah Sakit terdekat.</p>
         </div>
       </Modal>
     </>

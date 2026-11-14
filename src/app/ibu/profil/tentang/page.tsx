@@ -13,18 +13,18 @@ const KEGUNAAN: { gambar: NamaIlustrasi; judul: string; teks: string }[] = [
   { gambar: "buku", judul: "Belajar dari buku bergambar", teks: "Materi Buku KIA sesuai tahap Ibu." },
 ];
 
-/** Tentang MOMCARE: apa gunanya, dari mana isinya, dan batasannya. */
+/** Tentang Rangkul: apa gunanya, dari mana isinya, dan batasannya. */
 export default function Tentang() {
   return (
     <div className="space-y-6 px-4 pb-6">
-      <KepalaHalaman judul="Tentang MOMCARE" kembali="/ibu/profil" />
+      <KepalaHalaman judul="Tentang Rangkul" kembali="/ibu/profil" />
 
       <section className="flex flex-col items-center rounded-2xl bg-surface px-5 py-6 text-center shadow-[var(--shadow-kartu)]">
         <LogoMark className="size-16" />
-        <p className="mt-3 text-2xl font-extrabold tracking-tight">MOMCARE</p>
+        <p className="mt-3 text-2xl font-extrabold tracking-tight">Rangkul</p>
         <p className="text-sm text-muted">Buku KIA yang tidak berhenti di kertas</p>
         <p className="mt-4 text-[15px] leading-relaxed text-ink/80">
-          MOMCARE membantu Ibu, kader, bidan, dan dokter memakai isi Buku KIA setiap hari, dari masa hamil sampai bayi berusia 28 hari.
+          Rangkul membantu Ibu, kader, bidan, dan dokter memakai isi Buku KIA setiap hari, dari masa hamil sampai bayi berusia 28 hari.
         </p>
       </section>
 
@@ -57,7 +57,7 @@ export default function Tentang() {
 
       <p className="flex items-start gap-3 rounded-2xl bg-kuning-soft p-4 text-sm text-ink/80">
         <TriangleAlert className="mt-0.5 size-5 shrink-0 text-kuning" />
-        MOMCARE tidak menggantikan Buku KIA dan pemeriksaan tenaga kesehatan. Bila ada tanda bahaya, segera ke fasilitas kesehatan terdekat.
+        Rangkul tidak menggantikan Buku KIA dan pemeriksaan tenaga kesehatan. Bila ada tanda bahaya, segera ke fasilitas kesehatan terdekat.
       </p>
 
       <p className="text-center text-xs text-muted">Versi demo · semua data di aplikasi ini adalah data contoh</p>

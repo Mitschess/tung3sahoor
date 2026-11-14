@@ -4,18 +4,24 @@ import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { NamaGambar } from "@/data/gambar-kia";
-import { useStore } from "@/lib/store";
+import { MODE_AWAN, useStore } from "@/lib/store";
 import type { Pengguna } from "@/lib/types";
 import { W } from "~/tema";
 import { Ketuk, LatarIbu, LembarBawah, LogoMark, Teks, Tombol, gayaKartu, kabar } from "~/ui/dasar";
 import { GambarKia } from "~/ui/gambar";
+import { MasukAwan } from "~/ui/masuk-awan";
 import { TombolSos } from "~/ui/sos";
 
 /** Potret akun demo: potongan ilustrasi Buku KIA (bukan foto orang sungguhan). */
 const potret = (u: Pengguna): NamaGambar => (u.keterangan?.includes("Nifas") ? "avatar-ibu-nifas" : "avatar-ibu-hamil");
 
-/** Sambutan, persetujuan privasi, lalu pilih akun Ibu. Aplikasi ini khusus Ibu; kader dan nakes memakai web. */
+/** Layar masuk. Tersambung ke Supabase: nomor HP/email + PIN. Tanpa Supabase: pilih akun demo. */
 export default function Masuk() {
+  return MODE_AWAN ? <MasukAwan /> : <MasukDemo />;
+}
+
+/** Sambutan, persetujuan privasi, lalu pilih akun Ibu. Aplikasi ini khusus Ibu; kader dan nakes memakai web. */
+function MasukDemo() {
   const ins = useSafeAreaInsets();
   const router = useRouter();
   const pengguna = useStore((s) => s.pengguna);
@@ -71,7 +77,7 @@ export default function Masuk() {
           </View>
           <View style={{ marginTop: "auto", paddingTop: 40, alignItems: "center", gap: 8 }}>
             <Teks s={14} c={W.muted} style={{ textAlign: "center" }}>
-              Akun demo tanpa kata sandi. Semua data fiktif dan hanya tersimpan di HP ini. Kader dan nakes memakai MOMCARE versi web.
+              Akun demo tanpa kata sandi. Semua data fiktif dan hanya tersimpan di HP ini. Kader dan nakes memakai Rangkul versi web.
             </Teks>
             <Pressable
               onPress={() => {
@@ -104,7 +110,7 @@ export default function Masuk() {
           <LogoMark ukuran={64} style={{ position: "absolute", bottom: -22, alignSelf: "center", borderWidth: 4, borderColor: W.surface }} />
         </View>
         <Teks w={800} s={30} lh={36} c={W.brand} style={{ marginTop: 44, letterSpacing: -0.5 }}>
-          MOMCARE
+          Rangkul
         </Teks>
         <Teks s={15} c={W.muted} style={{ marginTop: 6, textAlign: "center", maxWidth: 280 }}>
           Teman Buku KIA untuk Ibu hamil, ibu nifas, dan bayi baru lahir.
@@ -118,13 +124,13 @@ export default function Masuk() {
       <LembarBawah buka={!setuju} tutup={() => undefined} tanpaTutup judul="Syarat penggunaan & privasi">
         <View style={{ gap: 12 }}>
           <Teks s={15} c="rgba(31,42,55,0.85)">
-            Sebelum memakai MOMCARE, mohon baca ringkasan berikut:
+            Sebelum memakai Rangkul, mohon baca ringkasan berikut:
           </Teks>
           {[
             "Data diambil dari Buku KIA dan hanya dilihat kader di posyandu Ibu, bidan wilayah, dan dokter puskesmas.",
             "Hasil tes HIV/sifilis/hepatitis B dan kesehatan jiwa hanya untuk bidan/dokter.",
             "NIK disimpan tersandi. Foto Buku KIA dihapus setelah dicek petugas.",
-            "MOMCARE bukan layanan gawat darurat dan tidak menggantikan pemeriksaan tenaga kesehatan.",
+            "Rangkul bukan layanan gawat darurat dan tidak menggantikan pemeriksaan tenaga kesehatan.",
             "Versi demo ini memakai data fiktif yang tersimpan di HP Ibu saja.",
           ].map((b) => (
             <View key={b} style={{ flexDirection: "row", gap: 10, paddingRight: 4 }}>

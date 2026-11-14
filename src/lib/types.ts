@@ -8,6 +8,7 @@ export interface Pengguna {
   posyandu?: string[];
   /** Untuk akun ibu: ibu yang ditautkan. */
   ibuId?: string;
+  telepon?: string;
   keterangan?: string;
 }
 

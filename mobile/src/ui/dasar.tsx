@@ -22,7 +22,7 @@ import {
 } from "react-native";
 import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Path } from "react-native-svg";
+import Svg, { Circle, Path } from "react-native-svg";
 import { urlHalamanCetak } from "@/lib/kamus";
 import { BAYANGAN, HURUF, W, type Tebal } from "~/tema";
 
@@ -273,13 +273,13 @@ export function Catatan({ ikon, children, latar = "rgba(0,0,0,0.03)", warna = W.
 
 /* ---------- Logo & memuat ---------- */
 
-/** LOGO SEMENTARA, sama dengan LogoMark di web. */
+/** Logo Rangkul "pelukan" (lengkung ibu memeluk bayi), sama dengan LogoMark di web. */
 export function LogoMark({ ukuran = 36, style }: { ukuran?: number; style?: StyleProp<ViewStyle> }) {
   return (
     <View style={[{ width: ukuran, height: ukuran, borderRadius: ukuran * 0.32, backgroundColor: W.brand, alignItems: "center", justifyContent: "center" }, style]}>
-      <Svg viewBox="0 0 24 24" width={ukuran * 0.6} height={ukuran * 0.6} fill="none" stroke="#fff" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
-        <Path d="M12 20s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 10c0 5.65-7 10-7 10Z" />
-        <Path d="M9.5 11.5h5M12 9v5" />
+      <Svg viewBox="0 0 96 96" width="100%" height="100%" fill="none">
+        <Path d="M66 27A27 27 0 1 0 74 60" stroke="#fff" strokeWidth={10} strokeLinecap="round" />
+        <Circle cx={51} cy={51} r={11} fill="#f48fb8" />
       </Svg>
     </View>
   );

@@ -96,7 +96,7 @@ export default function BerandaIbu() {
         </section>
       )}
 
-      <p className="px-2 pb-2 text-center text-xs text-muted">MOMCARE tidak menggantikan Buku KIA dan pemeriksaan bidan. Bila ada tanda bahaya, segera ke fasilitas kesehatan terdekat.</p>
+      <p className="px-2 pb-2 text-center text-xs text-muted">Rangkul tidak menggantikan Buku KIA dan pemeriksaan bidan. Bila ada tanda bahaya, segera ke fasilitas kesehatan terdekat.</p>
     </div>
   );
 }

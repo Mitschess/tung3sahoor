@@ -46,12 +46,12 @@ export default function Profil() {
       </Grup>
 
       <Grup judul="Lainnya">
-        <Baris2 ikon={Info} label="Tentang MOMCARE" sub="Kegunaan, sumber isi, dan batasan" href="/ibu/profil/tentang" />
+        <Baris2 ikon={Info} label="Tentang Rangkul" sub="Kegunaan, sumber isi, dan batasan" href="/ibu/profil/tentang" />
         <Baris2
           ikon={LogOut}
           label="Keluar"
           onClick={() => {
-            keluar();
+            void keluar();
             router.push("/masuk");
           }}
         />

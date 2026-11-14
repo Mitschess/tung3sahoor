@@ -223,7 +223,7 @@ function KotakHasil({ hasil, lembar }: { hasil: { merah: string[]; kuning: strin
             </Teks>
           </View>
           <Teks s={14} style={{ marginTop: 4 }}>
-            Kader dan bidan Ibu sudah diberi tahu lewat MOMCARE. {merah ? "Bila perdarahan, kejang, atau sesak, langsung ke fasilitas kesehatan terdekat." : ""}
+            Kader dan bidan Ibu sudah diberi tahu lewat Rangkul. {merah ? "Bila perdarahan, kejang, atau sesak, langsung ke fasilitas kesehatan terdekat." : ""}
           </Teks>
         </>
       ) : (

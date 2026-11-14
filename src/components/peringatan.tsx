@@ -150,7 +150,7 @@ export function ItemPeringatan({ p, r, ringkas }: { p: Peringatan; r: Ringkasan;
             disabled={alasan.trim().length < 3}
             onClick={() => {
               try {
-                tutup(p.id, alasan.trim());
+                tutup(p.id, alasan.trim(), p.ibuId);
                 toast.success("Peringatan ditutup");
                 setModalTutup(false);
               } catch (e) {

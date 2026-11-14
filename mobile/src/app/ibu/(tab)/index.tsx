@@ -112,7 +112,7 @@ export default function Beranda() {
       )}
 
       <Teks s={12} c={W.muted} style={{ textAlign: "center", paddingHorizontal: 8 }}>
-        MOMCARE tidak menggantikan Buku KIA dan pemeriksaan bidan. Bila ada tanda bahaya, segera ke fasilitas kesehatan terdekat.
+        Rangkul tidak menggantikan Buku KIA dan pemeriksaan bidan. Bila ada tanda bahaya, segera ke fasilitas kesehatan terdekat.
       </Teks>
     </Layar>
   );

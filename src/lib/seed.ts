@@ -8,6 +8,8 @@ import { iso, tambahHari } from "./tanggal";
 export const POSYANDU = ["Melati", "Mawar", "Anggrek"];
 export const PUSKESMAS = "Puskesmas Sukamaju";
 export const VERSI_PERSETUJUAN = "v1-2026-11";
+/** Akun ibu yang masuk dengan nomor HP disimpan di Supabase Auth sebagai 628…@DOMAIN_HP (lihat akun.ts). */
+export const DOMAIN_HP = "hp.momcare.app";
 
 export const PENGGUNA_DEMO: Pengguna[] = [
   { id: "u_ibu_siti", nama: "Siti Aminah", peran: "ibu", ibuId: "i_siti", keterangan: "Hamil trimester 3" },

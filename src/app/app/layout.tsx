@@ -10,7 +10,7 @@ import { LABEL_PERAN, bolehOcr } from "@/lib/akses";
 import { useDaftarRingkasan, useSekarang, useSiap } from "@/lib/hooks";
 import { useCatatJejak } from "@/lib/navigasi";
 import { daftarPengingat } from "@/lib/pengingat";
-import { usePengguna, useStore } from "@/lib/store";
+import { MODE_AWAN, usePengguna, useStore } from "@/lib/store";
 import type { Pengguna } from "@/lib/types";
 import { cn, inisial } from "@/lib/util";
 
@@ -70,9 +70,9 @@ function Kerangka({ u, children }: { u: Pengguna; children: React.ReactNode }) {
   // Detail ibu (/app/ibu/…) dan pendaftaran ibu baru (/app/daftar) tetap menandai "Daftar ibu".
   const aktif = (href: string) => (href === "/app" ? path === "/app" : path.startsWith(href) || (href === "/app/ibu" && path.startsWith("/app/daftar")));
   const gantiAkun = () => {
-    keluar();
-    router.push("/masuk");
+    void keluar().then(() => router.push("/masuk"));
   };
+  const labelKeluar = MODE_AWAN ? "Keluar" : "Ganti akun";
 
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[256px_1fr]">
@@ -107,7 +107,7 @@ function Kerangka({ u, children }: { u: Pengguna; children: React.ReactNode }) {
             </div>
           </div>
           <button onClick={gantiAkun} className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-line bg-surface text-sm font-semibold transition hover:bg-white">
-            <LogOut className="size-4" /> Ganti akun
+            <LogOut className="size-4" /> {labelKeluar}
           </button>
         </div>
       </aside>
@@ -148,7 +148,7 @@ function Kerangka({ u, children }: { u: Pengguna; children: React.ReactNode }) {
           </div>
         </div>
         <Tombol varian="garis" className="mt-4 w-full" onClick={gantiAkun}>
-          <LogOut className="size-4" /> Ganti akun
+          <LogOut className="size-4" /> {labelKeluar}
         </Tombol>
       </Modal>
     </div>

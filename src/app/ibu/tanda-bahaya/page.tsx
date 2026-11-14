@@ -22,7 +22,7 @@ export default function TandaBahaya() {
         <p className="flex items-center gap-2 text-lg font-extrabold">
           <Siren className="size-6" /> Ada tanda bahaya?
         </p>
-        <p className="mt-1 text-sm text-white/90">Jangan menunggu jadwal periksa. Segera ke fasilitas kesehatan terdekat. MOMCARE bukan layanan gawat darurat.</p>
+        <p className="mt-1 text-sm text-white/90">Jangan menunggu jadwal periksa. Segera ke fasilitas kesehatan terdekat. Rangkul bukan layanan gawat darurat.</p>
         <a href="tel:119" className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-white px-5 font-bold text-merah">
           <Phone className="size-4" /> Telepon 119
         </a>

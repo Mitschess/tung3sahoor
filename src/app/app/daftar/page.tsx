@@ -80,7 +80,7 @@ export default function DaftarkanIbu() {
           </div>
           <div className="space-y-2 rounded-2xl bg-bg p-4 text-sm leading-relaxed">
             <p>
-              Data dari Buku KIA Ibu akan dicatat di MOMCARE agar kader, bidan, dan dokter {PUSKESMAS} bisa mengingatkan jadwal periksa dan mengenali tanda bahaya lebih cepat.
+              Data dari Buku KIA Ibu akan dicatat di Rangkul agar kader, bidan, dan dokter {PUSKESMAS} bisa mengingatkan jadwal periksa dan mengenali tanda bahaya lebih cepat.
             </p>
             <ul className="list-disc space-y-1 pl-5">
               <li>Kader hanya melihat ibu di posyandunya sendiri.</li>

@@ -1,11 +1,11 @@
-# MOMCARE: Buku KIA yang tidak berhenti di kertas
+# Rangkul: Buku KIA yang tidak berhenti di kertas
 
 > Logicodix 2026 · Subtema **Inclusive Health & Well-being** · Tim **TUNG3SAHOOR**
 
-MOMCARE (MVP) mengubah isian **Buku KIA Kemenkes 2024** menjadi daftar tugas harian untuk kader, bidan, dan dokter. Tujuannya agar **tidak ada ibu hamil, ibu nifas, atau bayi baru lahir di wilayah posyandu yang terlewat**. MOMCARE terdiri dari dua aplikasi yang memakai aturan klinis yang sama:
+Rangkul (MVP) mengubah isian **Buku KIA Kemenkes 2024** menjadi daftar tugas harian untuk kader, bidan, dan dokter. Tujuannya agar **tidak ada ibu hamil, ibu nifas, atau bayi baru lahir di wilayah posyandu yang terlewat**. Rangkul terdiri dari dua aplikasi yang memakai aturan klinis yang sama:
 
 - **Web** (Next.js, folder ini): kader dan nakes melihat siapa yang **Merah** (hubungi hari ini), **Kuning** (cek kunjungan terdekat), dan **Hijau**. Ibu juga bisa memakai tampilan sederhananya di web: sedang di tahap apa, apa yang perlu dilakukan hari ini, dan tanda bahaya.
-- **Aplikasi Android MOMCARE Ibu** (React Native/Expo, folder [`mobile/`](mobile/)): tampilan ibu yang sama sebagai aplikasi HP, termasuk buku bergambar yang dibalik seperti kertas.
+- **Aplikasi Android Rangkul** (React Native/Expo, folder [`mobile/`](mobile/)): tampilan ibu yang sama sebagai aplikasi HP, termasuk buku bergambar yang dibalik seperti kertas.
 
 - **Demo:** _isi URL deploy di sini_ (mis. `https://momcare-xxx.vercel.app`)
 - **Video demo:** _opsional_
@@ -58,7 +58,8 @@ Web:
 
 - **Next.js 16** (App Router, Turbopack, Cache Components) · **React 19** · **TypeScript**
 - **Tailwind CSS v4** · `motion` · `lucide-react` · `recharts` · `sonner` · Radix Dialog
-- **zustand** (persist ke `localStorage`, *local-first*, tanpa backend berbayar)
+- **zustand** (persist ke `localStorage` di mode demo)
+- **Supabase** (opsional): Postgres + Row Level Security, Auth (PIN ibu / sandi petugas), Realtime; skema di `supabase/migrations/`
 - **Google Gemini** (`@google/genai`, structured output `responseJsonSchema`) untuk OCR tulisan tangan
 - **Tesseract.js** sebagai OCR cadangan di peramban bila `GEMINI_API_KEY` tidak diisi (baik untuk huruf cetak, lemah untuk tulisan tangan)
 - `date-fns` (locale `id`)
@@ -112,7 +113,7 @@ src/
   components/ilustrasi.tsx  ikon bergambar buatan tim (SVG) untuk menu Fitur dan keadaan kosong
 public/kia/                ilustrasi Buku KIA 2024 (WebP, ±1,4 MB total)
 scripts/cek-aturan.ts      uji mesin peringatan terhadap data demo
-mobile/                    aplikasi Android MOMCARE Ibu (Expo)
+mobile/                    aplikasi Android Rangkul (Expo)
   src/app/                 layar (Expo Router): masuk, ibu/(tab) beranda·fitur·catatan·profil,
                            pantau, persiapan, hasil, kb, tanda-bahaya, edukasi/[slug], profil/*
   src/ui/                  komponen native (kartu, flipbook, lembar materi, grafik SVG, ilustrasi)
@@ -144,7 +145,7 @@ npm run typecheck            # TypeScript
 npm run cek                  # cetak hasil mesin peringatan untuk data demo
 ```
 
-### Aplikasi Android (MOMCARE Ibu)
+### Aplikasi Android (Rangkul)
 
 ```bash
 cd mobile
@@ -157,7 +158,7 @@ Membuat APK untuk dibagikan (butuh Android SDK dan JDK 17+; di Windows JDK bawaa
 
 ```bash
 cd mobile
-npm run build:apk            # hasil: mobile/dist/momcare-ibu.apk
+npm run build:apk            # hasil: mobile/dist/rangkul.apk
 ```
 
 APK ditandatangani dengan kunci debug: cukup untuk demo dan dipasang langsung, bukan untuk Play Store (untuk itu pakai EAS Build). Folder `mobile/android/` dibuat ulang dari `app.json` saat build dan tidak disimpan di git. Kode native hanya dikompilasi untuk arm64 (ponsel); untuk emulator tambahkan `x86_64` lewat `ARSITEKTUR=arm64-v8a,x86_64`.
@@ -174,17 +175,50 @@ Catatan Windows: kode C++ New Architecture menghasilkan jalur berkas di atas 260
 | --- | --- | --- |
 | `GEMINI_API_KEY` | tidak | Tanpa kunci, foto Buku KIA dibaca di perangkat dengan Tesseract. Kunci gratis dari Google AI Studio. |
 | `GEMINI_MODEL` | tidak | Default `gemini-2.5-flash`. |
-| `NEXT_PUBLIC_URL_APK` | tidak | Tautan unduhan APK MOMCARE Ibu; bila diisi, tautan unduh muncul di tab Ibu pada layar masuk. |
+| `NEXT_PUBLIC_URL_APK` | tidak | Tautan unduhan APK Rangkul; bila diisi, tautan unduh muncul di tab Ibu pada layar masuk. |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | tidak | Sambungkan ke Supabase (lihat di bawah). Kosong = mode demo di browser. |
+| `SUPABASE_SECRET_KEY` | tidak | Hanya untuk `npm run seed:supabase` di komputer sendiri. Jangan diisi di Vercel. |
+| `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | tidak | Di `mobile/.env`, nilai sama dengan versi web, agar aplikasi Android tersambung. |
+
+### Menyambungkan ke Supabase (data bersama web + Android)
+
+Tanpa Supabase, Rangkul berjalan dalam **mode demo** (data contoh di perangkat masing-masing, pilih akun tanpa sandi). Dengan Supabase, data ibu, catatan, dan status peringatan tersimpan di satu database: isian ibu di HP langsung muncul di web petugas (realtime), dan akun dibuat lewat layar **Daftar**:
+
+- **Ibu**: Syarat & Ketentuan → Lengkapi Identitas Diri (nomor HP atau email, nama, NIK, tanggal lahir, posyandu) → **buat PIN 6 angka** → konfirmasi PIN. Masuk berikutnya: nomor HP/email lalu PIN. Bila kader sudah mendaftarkan ibu dengan NIK + tanggal lahir yang sama, akun langsung tertaut ke data itu.
+- **Kader / bidan / dokter** (web): Syarat & Ketentuan → nama, email, peran, posyandu, **kata sandi** (min. 8 karakter, huruf + angka).
+
+Langkah:
+
+1. Buat proyek di [supabase.com](https://supabase.com) (paket gratis cukup).
+2. **SQL Editor** → tempel isi `supabase/migrations/20261114000000_momcare_awal.sql` → *Run*. Ini membuat tabel, Row Level Security yang meniru `src/lib/akses.ts`, trigger pendaftaran (NIK langsung disandikan SHA-256 di database), dan realtime.
+3. **Authentication → Sign In / Providers → Email**: matikan **Confirm email**. Akun ibu yang memakai nomor HP disimpan sebagai `628…@hp.momcare.app` (Supabase butuh layanan SMS berbayar untuk login nomor HP), jadi tidak ada email konfirmasi yang bisa diterima.
+4. **Project Settings → API Keys**: salin URL proyek dan *publishable key* ke `.env.local` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`) dan ke `mobile/.env` (`EXPO_PUBLIC_…`). Salin juga *secret key* ke `SUPABASE_SECRET_KEY` di `.env.local`.
+5. `npm run seed:supabase` untuk membuat data contoh kecil (2 ibu, 2 petugas; lihat tabel akun di bawah). Bisa dijalankan ulang untuk mengembalikan data contoh.
+6. Jalankan ulang `npm run dev` / `npx expo start`. Untuk Vercel, tambahkan dua variabel `NEXT_PUBLIC_SUPABASE_*` lalu deploy ulang.
 
 ### Deploy (Vercel)
 
 1. Import repo di Vercel → framework terdeteksi Next.js.
 2. Tambahkan `GEMINI_API_KEY` (dan opsional `GEMINI_MODEL`) di *Environment Variables*.
-3. Deploy. Tidak perlu database: data demo dibuat di browser setiap pengguna.
+3. Opsional: tambahkan `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` agar data tersimpan di Supabase. Tanpa keduanya, data demo dibuat di browser setiap pengguna.
+4. Deploy.
 
 ## Akun demo
 
-Buka `/masuk` lalu pilih akun (tanpa kata sandi; data demo fiktif dan tersimpan di browser Anda). Akun ibu juga tersedia di aplikasi MOMCARE Ibu (tekan **Masuk**), dengan data yang tersimpan di HP. Tombol **Kembalikan data demo** mengatur ulang semuanya.
+**Dengan Supabase** (setelah `npm run seed:supabase`; semua data fiktif):
+
+| Akun | Peran | Masuk dengan |
+| --- | --- | --- |
+| **Siti Aminah** | Ibu, hamil 34 minggu (Merah: TD tinggi) | Telepon `081200000001`, PIN `246810` |
+| **Dewi Puspita** | Ibu, nifas + bayi | Telepon `081200000003`, PIN `246810` |
+| **Bidan Lestari Wulandari** | Bidan, Posyandu Melati & Mawar | `bidan@momcare.test`, sandi `Momcare2026` |
+| **Rina Marlina** | Kader Posyandu Melati | `kader@momcare.test`, sandi `Momcare2026` |
+
+Pemeriksaan dokter di data contoh dicatat atas nama bidan karena belum ada akun dokter; daftarkan dokter lewat layar **Daftar**. Tanggal data contoh dihitung saat skrip dijalankan, jadi jalankan ulang skrip bila usia kehamilan sudah tidak cocok.
+
+**Mode demo** (tanpa Supabase):
+
+Buka `/masuk` lalu pilih akun (tanpa kata sandi; data demo fiktif dan tersimpan di browser Anda). Akun ibu juga tersedia di aplikasi Rangkul (tekan **Masuk**), dengan data yang tersimpan di HP. Tombol **Kembalikan data demo** mengatur ulang semuanya.
 
 | Akun | Peran | Yang bisa dicoba |
 | --- | --- | --- |
@@ -207,7 +241,10 @@ Mesin peringatan **tidak** memakai AI: seluruhnya aturan deterministik yang dapa
 
 ## Catatan & keterbatasan
 
-- MVP ini *local-first*: data tersimpan di `localStorage` browser (web) dan AsyncStorage HP (aplikasi Ibu). **Keduanya belum tersambung**: isian ibu di aplikasi HP belum terlihat oleh petugas di web, dan sebaliknya. Untuk produksi, `store.ts` dapat diganti dengan backend bersama (mis. Supabase/Postgres dengan Row Level Security yang mencerminkan `akses.ts`).
+- Tanpa Supabase, data tersimpan di `localStorage` browser (web) dan AsyncStorage HP (aplikasi Ibu) dan **tidak saling tersambung**. Dengan Supabase, keduanya memakai database yang sama (`src/lib/awan.ts`); draf foto OCR tetap hanya di perangkat yang memotret.
+- Siapa pun bisa mendaftar sebagai kader/bidan/dokter dan langsung melihat ibu di wilayah yang dipilihnya. Sebelum dipakai sungguhan, tambahkan persetujuan admin atau kode pendaftaran puskesmas.
+- Kolom sensitif (tripel eliminasi, kesehatan jiwa) disembunyikan dari kader di aplikasi, tetapi RLS menyaring per baris, bukan per kolom: kader yang memanggil API langsung masih bisa membacanya. Untuk produksi, pisahkan kolom sensitif ke tabel sendiri.
+- Lupa PIN/kata sandi belum ada di aplikasi; admin dapat mengatur ulang lewat dasbor Supabase (Authentication → Users).
 - Beberapa level peringatan mengikuti kamus data bila berbeda dengan bagian 5b spesifikasi (mis. BBLR dan tripel eliminasi reaktif = **Merah**).
 - Aturan klinis adalah alat bantu skrining, bukan pengganti penilaian tenaga kesehatan.
 

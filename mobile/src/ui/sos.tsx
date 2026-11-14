@@ -1,4 +1,4 @@
-/** Tombol SOS: jalan pintas ke 119 dan daftar tanda bahaya. MOMCARE bukan layanan gawat darurat. */
+/** Tombol SOS: jalan pintas ke 119 dan daftar tanda bahaya. Rangkul bukan layanan gawat darurat. */
 import { useRouter } from "expo-router";
 import { BellRing, ChevronRight, Phone, ShieldAlert } from "lucide-react-native";
 import { useState, type ReactNode } from "react";
@@ -36,7 +36,7 @@ export function TombolSos({ tandaBahaya = true }: { tandaBahaya?: boolean }) {
             />
           )}
           <Teks s={12} c={W.muted} style={{ textAlign: "center" }}>
-            MOMCARE bukan layanan gawat darurat. Segera ke Puskesmas atau Rumah Sakit terdekat.
+            Rangkul bukan layanan gawat darurat. Segera ke Puskesmas atau Rumah Sakit terdekat.
           </Teks>
         </View>
       </LembarBawah>

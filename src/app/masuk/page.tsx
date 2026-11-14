@@ -4,20 +4,21 @@ import { ArrowLeft, ChevronRight, Download, RotateCcw, Smartphone } from "lucide
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
+import { IlustrasiSambutan as Ilustrasi } from "@/components/akun";
 import { GambarKia } from "@/components/gambar-kia";
-import { LogoMark } from "@/components/logo";
 import { TombolSos } from "@/components/sos";
 import { Memuat, Modal, Tombol } from "@/components/ui";
 import { LABEL_PERAN } from "@/lib/akses";
 import { useSiap } from "@/lib/hooks";
-import { useStore } from "@/lib/store";
+import { MODE_AWAN, useStore } from "@/lib/store";
 import type { Pengguna } from "@/lib/types";
 import { cn } from "@/lib/util";
 import type { NamaGambar } from "@/data/gambar-kia";
+import { MasukAwan } from "./awan";
 
 type Kelompok = "ibu" | "petugas";
 
-/** Tautan unduhan APK aplikasi Android MOMCARE Ibu (opsional, folder mobile/). */
+/** Tautan unduhan APK aplikasi Android Rangkul (opsional, folder mobile/). */
 const URL_APK = process.env.NEXT_PUBLIC_URL_APK;
 
 /** Potret akun demo: potongan ilustrasi Buku KIA (bukan foto orang sungguhan). */
@@ -30,11 +31,12 @@ export default function Masuk() {
   // Suspense diperlukan karena layar ini membaca URL (?pilih membuka pemilih akun langsung dari landing).
   return (
     <Suspense fallback={<Memuat penuh />}>
-      <MasukIsi />
+      {MODE_AWAN ? <MasukAwan /> : <MasukIsi />}
     </Suspense>
   );
 }
 
+/** Mode demo (tanpa Supabase): pilih akun contoh tanpa kata sandi. */
 function MasukIsi() {
   const siap = useSiap();
   const pengguna = useStore((s) => s.pengguna);
@@ -96,7 +98,7 @@ function MasukIsi() {
             <Smartphone className="size-5 shrink-0 text-brand" />
             <span className="min-w-0 flex-1">
               <span className="block font-semibold">Pakai HP Android?</span>
-              <span className="block text-muted">Unduh aplikasi MOMCARE Ibu (APK)</span>
+              <span className="block text-muted">Unduh aplikasi Rangkul (APK)</span>
             </span>
             <Download className="size-5 shrink-0 text-brand" />
           </a>
@@ -125,7 +127,7 @@ function MasukIsi() {
 
       <div className="flex flex-1 flex-col items-center justify-center py-8">
         <Ilustrasi />
-        <p className="mt-10 text-3xl font-extrabold tracking-tight text-brand">MOMCARE</p>
+        <p className="mt-10 text-3xl font-extrabold tracking-tight text-brand">Rangkul</p>
         <p className="mt-2 max-w-xs text-center text-[15px] text-muted">Teman Buku KIA untuk Ibu, kader, bidan, dan dokter.</p>
       </div>
 
@@ -136,12 +138,12 @@ function MasukIsi() {
 
       <Modal buka={!setuju} setBuka={() => undefined} tanpaTutup judul="Syarat penggunaan & privasi">
         <div className="space-y-3 text-[15px] leading-relaxed text-ink/85">
-          <p>Sebelum memakai MOMCARE, mohon baca ringkasan berikut:</p>
+          <p>Sebelum memakai Rangkul, mohon baca ringkasan berikut:</p>
           <ul className="list-disc space-y-1.5 pl-5 text-sm">
             <li>Data diambil dari Buku KIA dan hanya dilihat kader di posyandu Ibu, bidan wilayah, dan dokter puskesmas.</li>
             <li>Hasil tes HIV/sifilis/hepatitis B dan kesehatan jiwa hanya untuk bidan/dokter.</li>
             <li>NIK disimpan tersandi. Foto Buku KIA dihapus setelah dicek petugas.</li>
-            <li>MOMCARE bukan layanan gawat darurat dan tidak menggantikan pemeriksaan tenaga kesehatan.</li>
+            <li>Rangkul bukan layanan gawat darurat dan tidak menggantikan pemeriksaan tenaga kesehatan.</li>
             <li>Versi demo ini memakai data fiktif yang tersimpan di browser Anda saja.</li>
           </ul>
           <Tombol className="w-full" onClick={setujui}>
@@ -150,17 +152,5 @@ function MasukIsi() {
         </div>
       </Modal>
     </main>
-  );
-}
-
-/** Sambutan: ilustrasi keluarga dari Buku KIA dalam bingkai lembut, dengan logo MOMCARE. */
-function Ilustrasi() {
-  return (
-    <div className="relative w-full max-w-[300px]">
-      <div className="overflow-hidden rounded-[46%_54%_44%_56%/56%_44%_56%_44%] bg-[#f4f2e7]">
-        <GambarKia nama="menyusui" alt="Ayah, ibu, dan bayi yang sedang menyusu" preload sizes="300px" className="scale-110" />
-      </div>
-      <LogoMark className="absolute -bottom-5 left-1/2 size-16 -translate-x-1/2 ring-4 ring-surface" />
-    </div>
   );
 }
