@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Bidang, IsianSandi, IsianTelepon, IsiSyarat, PapanPin, TabGaris } from "@/components/akun";
+import { Bidang, IsianSandi, IsianTelepon, IsiSyarat, PapanPin, ServerBelumTersambung, TabGaris } from "@/components/akun";
 import { Masukan, Memuat, Modal, Pilihan, Tombol } from "@/components/ui";
 import {
   SYARAT_IBU,
@@ -28,21 +28,9 @@ import { cn } from "@/lib/util";
 
 export default function Daftar() {
   // Suspense diperlukan karena layar ini membaca URL (?peran=petugas dari layar masuk).
-  return <Suspense fallback={<Memuat penuh />}>{MODE_AWAN ? <DaftarIsi /> : <TanpaServer />}</Suspense>;
+  return <Suspense fallback={<Memuat penuh />}>{MODE_AWAN ? <DaftarIsi /> : <ServerBelumTersambung />}</Suspense>;
 }
 
-function TanpaServer() {
-  return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-3 bg-surface px-6 text-center">
-      <Info className="size-10 text-brand" />
-      <h1 className="text-xl font-bold">Pendaftaran butuh server</h1>
-      <p className="text-sm text-muted">Rangkul sedang berjalan dalam mode demo. Isi NEXT_PUBLIC_SUPABASE_URL dan kuncinya di .env.local agar akun bisa didaftarkan.</p>
-      <Link href="/masuk?pilih" className="mt-2 font-semibold text-brand">
-        Pakai akun demo
-      </Link>
-    </main>
-  );
-}
 
 function DaftarIsi() {
   const siap = useSiap();

@@ -1,6 +1,6 @@
 "use client";
 
-import { Delete, Eye, EyeOff, Lock } from "lucide-react";
+import { CloudOff, Delete, Eye, EyeOff, Lock } from "lucide-react";
 import { motion, useAnimationControls } from "motion/react";
 import { useCallback, useEffect, useState, type InputHTMLAttributes, type ReactNode } from "react";
 import { PANJANG_PIN } from "@/lib/akun";
@@ -202,5 +202,22 @@ export function IlustrasiSambutan() {
       </div>
       <LogoMark className="absolute -bottom-5 left-1/2 size-16 -translate-x-1/2 ring-4 ring-surface" />
     </div>
+  );
+}
+
+/**
+ * Ditampilkan bila NEXT_PUBLIC_SUPABASE_URL / _PUBLISHABLE_KEY belum diisi saat build.
+ * Tidak ada lagi akun demo: semua akun harus masuk lewat PIN atau kata sandi.
+ */
+export function ServerBelumTersambung() {
+  return (
+    <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-3 bg-surface px-6 text-center">
+      <CloudOff className="size-10 text-brand" />
+      <h1 className="text-xl font-bold">Server belum tersambung</h1>
+      <p className="text-sm text-muted">
+        Rangkul belum bisa dipakai karena alamat server belum diatur. Admin perlu mengisi NEXT_PUBLIC_SUPABASE_URL dan NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (di .env.local atau
+        Environment Variables Vercel), lalu build/deploy ulang.
+      </p>
+    </main>
   );
 }

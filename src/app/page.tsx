@@ -19,7 +19,7 @@ export default function Beranda() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <Logo />
         <Link href="/masuk?pilih" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-ink/85">
-          Coba demo
+          Masuk
         </Link>
       </header>
 
@@ -35,10 +35,13 @@ export default function Beranda() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/masuk?pilih" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand px-6 font-semibold text-white hover:bg-brand-ink">
-                Coba demo <ArrowRight className="size-4" />
+                Masuk <ArrowRight className="size-4" />
+              </Link>
+              <Link href="/daftar" className="inline-flex h-12 items-center gap-2 rounded-xl border-2 border-brand px-6 font-semibold text-brand hover:bg-brand/5">
+                Daftar
               </Link>
             </div>
-            <p className="mt-3 text-sm text-muted">Tanpa kata sandi. Pilih akun ibu, kader, bidan, atau dokter.</p>
+            <p className="mt-3 text-sm text-muted">Ibu masuk dengan nomor HP dan PIN. Kader, bidan, dan dokter masuk dengan email dan kata sandi.</p>
             <dl className="mt-10 grid max-w-md grid-cols-3 gap-4">
               {[
                 ["6", "kali periksa hamil (K1–K6)"],
@@ -124,7 +127,7 @@ export default function Beranda() {
               <li>• Peringatan bukan diagnosis; keputusan tetap pada bidan/dokter.</li>
               <li>• Tidak menggantikan Buku KIA maupun layanan gawat darurat.</li>
               <li>• Data hasil foto baru tersimpan setelah dikonfirmasi.</li>
-              <li>• Data demo seluruhnya palsu.</li>
+              <li>• Data contoh (Siti, Dewi) seluruhnya fiktif.</li>
             </ul>
           </div>
         </div>

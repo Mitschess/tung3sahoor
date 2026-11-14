@@ -60,7 +60,7 @@ export default function Tentang() {
         Rangkul tidak menggantikan Buku KIA dan pemeriksaan tenaga kesehatan. Bila ada tanda bahaya, segera ke fasilitas kesehatan terdekat.
       </p>
 
-      <p className="text-center text-xs text-muted">Versi demo · semua data di aplikasi ini adalah data contoh</p>
+      <p className="text-center text-xs text-muted">Versi uji coba · akun Siti Aminah dan Dewi Puspita adalah data contoh</p>
     </div>
   );
 }

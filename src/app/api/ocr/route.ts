@@ -109,7 +109,7 @@ export async function POST(req: Request) {
   const kunci = process.env.GEMINI_API_KEY;
   if (!kunci) return Response.json({ pesan: "Server tidak memiliki kunci AI. Foto dibaca di perangkat." }, { status: 503 });
 
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.8-flash";
   const def = kamus.tabel[tabel];
   const target =
     tabel === "anc" ? `kolom kunjungan K${kunjungan ?? "?"} (kunjungan_ke = ${kunjungan ?? "?"})` : tabel === "kf" ? `kunjungan nifas KF${kunjungan ?? "?"}` : `kunjungan neonatal ${kunjungan ?? "?"}`;

@@ -4,12 +4,12 @@ import { ArrowLeft, Download, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Bidang, IlustrasiSambutan, IsianSandi, IsianTelepon, PapanPin, TabGaris } from "@/components/akun";
+import { Bidang, IlustrasiSambutan, IsianSandi, IsianTelepon, PapanPin, ServerBelumTersambung, TabGaris } from "@/components/akun";
 import { TombolSos } from "@/components/sos";
 import { Masukan, Memuat, Tombol } from "@/components/ui";
 import { alamatAkunIbu, emailValid, masukAkun, type CaraMasuk } from "@/lib/akun";
 import { useSiap } from "@/lib/hooks";
-import { usePengguna } from "@/lib/store";
+import { MODE_AWAN, usePengguna } from "@/lib/store";
 
 const URL_APK = process.env.NEXT_PUBLIC_URL_APK;
 
@@ -36,9 +36,10 @@ export function MasukAwan() {
 
   // Sudah masuk (sesi tersimpan) → langsung ke beranda masing-masing.
   useEffect(() => {
-    if (siap && u) router.replace(u.peran === "ibu" ? "/ibu" : "/app");
+    if (MODE_AWAN && siap && u) router.replace(u.peran === "ibu" ? "/ibu" : "/app");
   }, [siap, u, router]);
 
+  if (!MODE_AWAN) return <ServerBelumTersambung />;
   if (!siap || u) return <Memuat penuh />;
 
   const alamatIbu = alamatAkunIbu(cara, cara === "telepon" ? telepon : email);

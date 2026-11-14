@@ -33,7 +33,7 @@ export default function Daftar() {
   if (!MODE_AWAN) {
     return (
       <View style={{ flex: 1, backgroundColor: W.surface, paddingTop: ins.top + 40, paddingHorizontal: 20 }}>
-        <Kosong ikon={<Info size={36} color={W.brand} />} judul="Pendaftaran butuh server" teks="Aplikasi sedang dalam mode demo. Isi EXPO_PUBLIC_SUPABASE_URL dan kuncinya di mobile/.env, lalu jalankan ulang." aksi={<Tombol onPress={() => router.back()}>Kembali</Tombol>} />
+        <Kosong ikon={<Info size={36} color={W.brand} />} judul="Server belum tersambung" teks="Isi EXPO_PUBLIC_SUPABASE_URL dan EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY di mobile/.env, lalu build ulang aplikasi." aksi={<Tombol onPress={() => router.back()}>Kembali</Tombol>} />
       </View>
     );
   }

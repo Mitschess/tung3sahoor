@@ -80,7 +80,7 @@ export default function Tentang() {
       </View>
 
       <Teks s={12} c={W.muted} style={{ textAlign: "center" }}>
-        Versi {Constants.expoConfig?.version ?? "1.0.0"} (demo) · semua data di aplikasi ini adalah data contoh
+        Versi {Constants.expoConfig?.version ?? "1.0.0"} (uji coba) · akun Siti Aminah dan Dewi Puspita adalah data contoh
       </Teks>
     </Layar>
   );

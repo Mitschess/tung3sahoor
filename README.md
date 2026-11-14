@@ -174,7 +174,7 @@ Catatan Windows: kode C++ New Architecture menghasilkan jalur berkas di atas 260
 | Nama | Wajib | Keterangan |
 | --- | --- | --- |
 | `GEMINI_API_KEY` | tidak | Tanpa kunci, foto Buku KIA dibaca di perangkat dengan Tesseract. Kunci gratis dari Google AI Studio. |
-| `GEMINI_MODEL` | tidak | Default `gemini-2.5-flash`. |
+| `GEMINI_MODEL` | tidak | Default `gemini-3.8-flash`. |
 | `NEXT_PUBLIC_URL_APK` | tidak | Tautan unduhan APK Rangkul; bila diisi, tautan unduh muncul di tab Ibu pada layar masuk. |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | tidak | Sambungkan ke Supabase (lihat di bawah). Kosong = mode demo di browser. |
 | `SUPABASE_SECRET_KEY` | tidak | Hanya untuk `npm run seed:supabase` di komputer sendiri. Jangan diisi di Vercel. |
@@ -234,7 +234,7 @@ Skenario data: Siti (Merah, TD tinggi; K5 diinput lewat foto), Rahma (Merah, ris
 
 | Di mana | AI | Untuk apa | Batasan |
 | --- | --- | --- | --- |
-| Fitur **Foto Buku KIA** (`src/app/api/ocr/route.ts`) | Google Gemini (default `gemini-2.5-flash`) | Membaca tulisan tangan di tabel K1–K6, KF, KN menjadi JSON sesuai kamus data + keyakinan per kolom | Hasil hanya draf; wajib dicek & dikonfirmasi kader/nakes; nilai di luar rentang wajar diturunkan keyakinannya; kolom sensitif tidak diekstrak |
+| Fitur **Foto Buku KIA** (`src/app/api/ocr/route.ts`) | Google Gemini (default `gemini-3.8-flash`) | Membaca tulisan tangan di tabel K1–K6, KF, KN menjadi JSON sesuai kamus data + keyakinan per kolom | Hasil hanya draf; wajib dicek & dikonfirmasi kader/nakes; nilai di luar rentang wajar diturunkan keyakinannya; kolom sensitif tidak diekstrak |
 | Pengembangan | Claude Code (Anthropic) | Membantu menelaah dokumen spesifikasi & Buku KIA, menulis kode, dan pengujian | Aturan klinis ditinjau tim terhadap Buku KIA & kamus data; keputusan desain tetap oleh tim |
 
 Mesin peringatan **tidak** memakai AI: seluruhnya aturan deterministik yang dapat diaudit.
