@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Aplikasi Android Ibu (Expo) punya lint sendiri: cd mobile && npx expo lint
     "mobile/**",
+    // Video demo (Remotion) punya konfigurasi sendiri di video/.
+    "video/**",
   ]),
 ]);
 
