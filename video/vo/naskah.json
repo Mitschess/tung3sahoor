@@ -1,0 +1,30 @@
+{
+  "_keterangan": "Naskah voice over. 'jeda' = detik setelah adegan mulai. Waktu mulai adegan dihitung dari src/durasi.json, jadi selalu sinkron dengan video. Bila merekam suara sendiri, simpan per baris sebagai public/vo/<id>.mp3 (atau .wav) lalu jalankan: python scripts/buat-vo.py --tanpa-tts",
+  "suara": "id-ID-GadisNeural",
+  "kecepatan": "+0%",
+  "baris": [
+    { "id": "01-Pembuka", "jeda": 0.4, "teks": "Setiap ibu hamil di Indonesia membawa satu buku penting: Buku Kesehatan Ibu dan Anak, atau Buku KIA." },
+    { "id": "02-IsiBuku", "jeda": 0.6, "teks": "Di dalamnya tercatat seluruh perjalanan ibu dan bayi: jadwal periksa, hasil pemeriksaan, tanda bahaya, sampai grafik tumbuh kembang." },
+    { "id": "03-Dibawa", "jeda": 0.5, "teks": "Buku ini harus selalu dibawa setiap kali periksa. Enam kali saat hamil, empat kali masa nifas, dan tiga kali untuk bayi baru lahir." },
+    { "id": "04-Basah", "jeda": 0.5, "teks": "Tapi buku kertas rentan. Kena hujan atau tumpahan air sedikit saja, tintanya luntur, dan angka tekanan darah tidak bisa dibaca lagi." },
+    { "id": "05-Hilang", "jeda": 0.5, "teks": "Buku juga bisa tertinggal, terselip, atau hilang. Riwayat pemeriksaan ibu ikut hilang bersamanya." },
+    { "id": "06-Terpisah", "jeda": 0.5, "teks": "Catatan kader, bidan, dan puskesmas pun tersimpan di buku masing-masing, tidak saling terhubung. Ibu yang terlambat periksa, atau tekanan darahnya tinggi, bisa luput dari perhatian." },
+    { "id": "07-Dampak", "jeda": 0.5, "teks": "Padahal masa paling rawan justru setelah melahirkan, dan pada dua puluh delapan hari pertama kehidupan bayi." },
+    { "id": "08-Jembatan", "jeda": 0.4, "teks": "Bagaimana jika Buku KIA tidak berhenti di kertas?" },
+    { "id": "09-Logo", "jeda": 0.5, "teks": "Perkenalkan Rangkul, teman Buku KIA untuk ibu dan tenaga kesehatan." },
+    { "id": "10-SatuData", "jeda": 0.5, "teks": "Dengan Rangkul, satu catatan dipakai bersama. Isian ibu di HP langsung terlihat oleh bidan, dan hasil periksa bidan langsung sampai ke ibu." },
+    { "id": "11-IbuMasuk", "jeda": 0.5, "teks": "Ibu cukup masuk dengan nomor HP dan PIN enam angka. Kalau bukunya tertinggal, catatannya tetap aman di akun Ibu." },
+    { "id": "12-Beranda", "jeda": 0.5, "teks": "Di beranda, usia kehamilan dihitung otomatis. Tanda bahaya langsung diberi warna merah, lengkap dengan apa yang perlu dilakukan hari ini, dan hasil periksa terakhir dari bidan." },
+    { "id": "13-Pantau", "jeda": 0.5, "teks": "Setiap minggu, ibu cukup mengetuk gambar keluhan yang dialami, memakai gambar asli dari lembar pemantauan Buku KIA. Keluhan berbahaya langsung diteruskan ke bidan." },
+    { "id": "14-Edukasi", "jeda": 0.5, "teks": "Ada juga tiga belas buku edukasi bergambar sesuai tahap ibu, yang bisa dibalik seperti buku kertas, lengkap dengan halaman rujukannya." },
+    { "id": "15-Jadwal", "jeda": 0.5, "teks": "Jadwal kunjungan, grafik berat badan, dan tanda bahaya bergambar, semuanya selalu ada dalam genggaman." },
+    { "id": "16-NakesJudul", "jeda": 0.3, "teks": "Bagi kader, bidan, dan dokter, ada versi web." },
+    { "id": "17-Dasbor", "jeda": 0.5, "teks": "Dasbor langsung menunjukkan siapa yang harus dihubungi hari ini. Merah berarti hubungi hari ini, kuning dicek saat kunjungan, dan hijau sesuai jadwal. Semuanya dari sekitar tiga puluh aturan klinis Buku KIA." },
+    { "id": "18-Detail", "jeda": 0.5, "teks": "Di halaman detail, setiap peringatan menyertakan halaman Buku KIA sebagai rujukan. Tekanan darah seratus empat puluh lima per sembilan puluh lima langsung ditandai merah, dan hanya bidan atau dokter yang bisa menutup peringatan." },
+    { "id": "19-Ocr", "jeda": 0.5, "teks": "Catatan lama di kertas tidak perlu diketik ulang. Cukup foto tabel Buku KIA. AI membaca tulisan tangan menjadi draf, angka yang ragu ditandai kuning, dan baru tersimpan setelah dicek dan dikonfirmasi kader." },
+    { "id": "20-Pengingat", "jeda": 0.5, "teks": "Pengingat jadwal dikirim lewat WhatsApp: dua hari sebelum, pada hari periksa, dan dua hari sesudahnya. Bukan hanya ke ibu, tapi juga ke suami atau keluarga, tanpa data sensitif." },
+    { "id": "21-Terjawab", "jeda": 0.5, "teks": "Masalah tadi pun terjawab. Kena air atau hilang, catatan tetap aman, dan semua pihak terhubung dalam satu data. Rangkul mendampingi Buku KIA, bukan menggantikannya." },
+    { "id": "23-Privasi", "jeda": 0.4, "teks": "Aman dan etis: atas persetujuan ibu, NIK disandikan, akses sesuai peran, dan keputusan klinis tetap di tangan tenaga kesehatan." },
+    { "id": "24-Penutup", "jeda": 1.2, "teks": "Rangkul. Buku KIA yang tidak berhenti di kertas." }
+  ]
+}

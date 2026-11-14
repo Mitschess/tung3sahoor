@@ -31,7 +31,11 @@
     "render": "remotion render Rangkul out/rangkul-demo.mp4",
     "render:cepat": "remotion render Rangkul out/rangkul-demo-720p.mp4 --scale=0.6667",
     "tangkap": "node scripts/tangkap-layar.mjs http://localhost:3300",
-    "musik": "node scripts/buat-musik.mjs 262 78 && ffmpeg -y -v error -i public/musik/latar.wav -b:a 192k public/musik/latar.mp3 && node -e \"require('fs').rmSync('public/musik/latar.wav')\"",
+    "musik": "node scripts/buat-musik.mjs 281 78 && ffmpeg -y -v error -i public/musik/latar.wav -b:a 192k public/musik/latar.mp3 && node -e \"require('fs').rmSync('public/musik/latar.wav')\"",
+    "vo": "python scripts/buat-vo.py",
+    "vo:rekaman": "python scripts/buat-vo.py --tanpa-tts",
+    "gabung": "node scripts/gabung-vo.mjs",
+    "gabung:subtitle": "node scripts/gabung-vo.mjs --subtitle",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"

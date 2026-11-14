@@ -1,0 +1,31 @@
+{
+  "_keterangan": "Durasi tiap adegan dalam frame (30 fps). Dipakai video (daftar-adegan.ts) dan skrip VO (scripts/buat-vo.py) supaya waktunya selalu sama.",
+  "fps": 30,
+  "transisi": 15,
+  "adegan": {
+    "01-Pembuka": 240,
+    "02-IsiBuku": 330,
+    "03-Dibawa": 360,
+    "04-Basah": 330,
+    "05-Hilang": 300,
+    "06-Terpisah": 420,
+    "07-Dampak": 300,
+    "08-Jembatan": 180,
+    "09-Logo": 210,
+    "10-SatuData": 360,
+    "11-IbuMasuk": 300,
+    "12-Beranda": 450,
+    "13-Pantau": 420,
+    "14-Edukasi": 390,
+    "15-Jadwal": 390,
+    "16-NakesJudul": 150,
+    "17-Dasbor": 480,
+    "18-Detail": 510,
+    "19-Ocr": 540,
+    "20-Pengingat": 450,
+    "21-Terjawab": 420,
+    "22-Arsitektur": 600,
+    "23-Privasi": 300,
+    "24-Penutup": 330
+  }
+}
