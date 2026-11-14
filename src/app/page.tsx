@@ -18,7 +18,7 @@ export default function Beranda() {
 
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <Logo />
-        <Link href="/masuk?pilih" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-ink/85">
+        <Link href="/masuk" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-ink/85">
           Masuk
         </Link>
       </header>
@@ -34,7 +34,7 @@ export default function Beranda() {
               Rangkul memastikan tidak ada ibu hamil dan bayi baru lahir di wilayah kader yang terlewat: dari pemeriksaan kehamilan K1–K6, persalinan, nifas, sampai bayi 28 hari.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/masuk?pilih" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand px-6 font-semibold text-white hover:bg-brand-ink">
+              <Link href="/masuk" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand px-6 font-semibold text-white hover:bg-brand-ink">
                 Masuk <ArrowRight className="size-4" />
               </Link>
               <Link href="/daftar" className="inline-flex h-12 items-center gap-2 rounded-xl border-2 border-brand px-6 font-semibold text-brand hover:bg-brand/5">

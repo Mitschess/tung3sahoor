@@ -36,7 +36,8 @@ function DaftarIsi() {
   const siap = useSiap();
   const u = usePengguna();
   const router = useRouter();
-  const awal = useSearchParams().get("peran") === "petugas" ? "petugas" : null;
+  const p = useSearchParams().get("peran");
+  const awal = p === "petugas" || p === "ibu" ? p : null;
   const [peran, setPeran] = useState<"ibu" | "petugas" | null>(awal);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ function DaftarIsi() {
       </div>
       <p className="mt-auto pt-10 text-center text-sm text-muted">
         Sudah punya akun?{" "}
-        <Link href="/masuk?pilih" className="font-semibold text-brand">
+        <Link href="/masuk" className="font-semibold text-brand">
           Masuk
         </Link>
       </p>
