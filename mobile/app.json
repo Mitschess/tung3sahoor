@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "MOMCARE Ibu",
+    "slug": "momcare-ibu",
+    "version": "1.0.0",
+    "scheme": "momcare",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#f8fafd",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "id.momcare.ibu"
+    },
+    "android": {
+      "package": "id.momcare.ibu",
+      "adaptiveIcon": {
+        "backgroundColor": "#2f8af5",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-image",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 120,
+          "backgroundColor": "#f8fafd"
+        }
+      ],
+      "@react-native-community/datetimepicker",
+      "./plugins/cmake-baru"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

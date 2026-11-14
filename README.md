@@ -2,7 +2,10 @@
 
 > Logicodix 2026 · Subtema **Inclusive Health & Well-being** · Tim **TUNG3SAHOOR**
 
-MOMCARE adalah web app (MVP) yang mengubah isian **Buku KIA Kemenkes 2024** menjadi daftar tugas harian untuk kader, bidan, dan dokter. Tujuannya agar **tidak ada ibu hamil, ibu nifas, atau bayi baru lahir di wilayah posyandu yang terlewat**. Ibu melihat tampilan yang sederhana: sedang di tahap apa, apa yang perlu dilakukan hari ini, dan tanda bahaya. Kader/nakes melihat siapa yang **Merah** (hubungi hari ini), **Kuning** (cek kunjungan terdekat), dan **Hijau**.
+MOMCARE (MVP) mengubah isian **Buku KIA Kemenkes 2024** menjadi daftar tugas harian untuk kader, bidan, dan dokter. Tujuannya agar **tidak ada ibu hamil, ibu nifas, atau bayi baru lahir di wilayah posyandu yang terlewat**. MOMCARE terdiri dari dua aplikasi yang memakai aturan klinis yang sama:
+
+- **Web** (Next.js, folder ini): kader dan nakes melihat siapa yang **Merah** (hubungi hari ini), **Kuning** (cek kunjungan terdekat), dan **Hijau**. Ibu juga bisa memakai tampilan sederhananya di web: sedang di tahap apa, apa yang perlu dilakukan hari ini, dan tanda bahaya.
+- **Aplikasi Android MOMCARE Ibu** (React Native/Expo, folder [`mobile/`](mobile/)): tampilan ibu yang sama sebagai aplikasi HP, termasuk buku bergambar yang dibalik seperti kertas.
 
 - **Demo:** _isi URL deploy di sini_ (mis. `https://momcare-xxx.vercel.app`)
 - **Video demo:** _opsional_
@@ -48,6 +51,10 @@ Buku KIA berisi jadwal kunjungan (K1–K6, KF1–KF4, KN1–KN3), lembar pemanta
 - Semua data demo **fiktif**.
 
 ## Teknologi
+
+Aplikasi Ibu (`mobile/`): **Expo SDK 58** · **React Native 0.88** (New Architecture) · Expo Router · Reanimated 4 + Gesture Handler 3 (flipbook dihitung di thread UI) · react-native-svg (grafik & ilustrasi) · expo-image · AsyncStorage.
+
+Web:
 
 - **Next.js 16** (App Router, Turbopack, Cache Components) · **React 19** · **TypeScript**
 - **Tailwind CSS v4** · `motion` · `lucide-react` · `recharts` · `sonner` · Radix Dialog
@@ -98,13 +105,23 @@ src/
       daftar/              pendaftaran ibu (persetujuan → identitas → keluarga → kehamilan)
       pengingat/  kamus/
     api/ocr/route.ts       OCR Gemini (atau mode demo)
-  lib/
+  lib/                     dipakai bersama oleh web dan aplikasi Ibu
     kamus.ts  aturan.ts  jadwal.ts  tahap.ts  skrining.ts  akses.ts  store.ts  seed.ts ...
+    penyimpanan.ts / .native.ts   localStorage di web, AsyncStorage di Android
   data/kamus-data-momcare.json, edukasi.ts (isi flipbook), gambar-kia.ts (daftar ilustrasi)
   components/ilustrasi.tsx  ikon bergambar buatan tim (SVG) untuk menu Fitur dan keadaan kosong
 public/kia/                ilustrasi Buku KIA 2024 (WebP, ±1,4 MB total)
 scripts/cek-aturan.ts      uji mesin peringatan terhadap data demo
+mobile/                    aplikasi Android MOMCARE Ibu (Expo)
+  src/app/                 layar (Expo Router): masuk, ibu/(tab) beranda·fitur·catatan·profil,
+                           pantau, persiapan, hasil, kb, tanda-bahaya, edukasi/[slug], profil/*
+  src/ui/                  komponen native (kartu, flipbook, lembar materi, grafik SVG, ilustrasi)
+  metro.config.js          alias @/ → ../src supaya aturan klinis tidak disalin
+  scripts/build-apk.mjs    membuat APK rilis di komputer sendiri
+  plugins/cmake-baru.js    plugin Expo: CMake 3.31 untuk semua modul native (jalur panjang di Windows)
 ```
+
+Aplikasi Ibu **tidak menyalin** logika klinis: `@/lib/...` dan `@/data/...` di `mobile/` menunjuk langsung ke `src/` proyek web lewat Metro, dan ilustrasi diambil dari `public/kia/`. Mengubah aturan di `src/lib/aturan.ts` berlaku untuk kedua aplikasi.
 
 ## Menjalankan secara lokal
 
@@ -127,12 +144,37 @@ npm run typecheck            # TypeScript
 npm run cek                  # cetak hasil mesin peringatan untuk data demo
 ```
 
+### Aplikasi Android (MOMCARE Ibu)
+
+```bash
+cd mobile
+npm install
+npx expo start               # pindai QR dengan Expo Go di HP Android, atau tekan "a" untuk emulator
+npm run typecheck && npm run lint
+```
+
+Membuat APK untuk dibagikan (butuh Android SDK dan JDK 17+; di Windows JDK bawaan Android Studio dipakai otomatis):
+
+```bash
+cd mobile
+npm run build:apk            # hasil: mobile/dist/momcare-ibu.apk
+```
+
+APK ditandatangani dengan kunci debug: cukup untuk demo dan dipasang langsung, bukan untuk Play Store (untuk itu pakai EAS Build). Folder `mobile/android/` dibuat ulang dari `app.json` saat build dan tidak disimpan di git. Kode native hanya dikompilasi untuk arm64 (ponsel); untuk emulator tambahkan `x86_64` lewat `ARSITEKTUR=arm64-v8a,x86_64`.
+
+Catatan Windows: kode C++ New Architecture menghasilkan jalur berkas di atas 260 karakter, jadi build butuh:
+
+- CMake **3.31.6** di Android SDK (Android Studio → SDK Manager → SDK Tools → centang *Show Package Details* → CMake 3.31.6). Ninja di CMake 3.22 bawaan belum mendukung jalur panjang; plugin `mobile/plugins/cmake-baru.js` memaksa semua modul memakai 3.31.6.
+- Jalur panjang aktif di Windows (`LongPathsEnabled = 1`, lihat dokumentasi Microsoft "Maximum Path Length Limitation").
+- Bila proyek berada di folder yang dalam, skrip menyalin `mobile/`, `src/`, dan `public/kia/` ke `C:\mi` (ganti lewat `FOLDER_BUILD`) dan membangun di sana; salinan berikutnya hanya memperbarui yang berubah. Sediakan ruang disk ±10 GB untuk build pertama (NDK, CMake, dan hasil kompilasi).
+
 ### Variabel lingkungan
 
 | Nama | Wajib | Keterangan |
 | --- | --- | --- |
-| `GEMINI_API_KEY` | tidak | Tanpa kunci, fitur foto memakai **mode demo** (contoh hasil, ditandai jelas di layar). Kunci gratis dari Google AI Studio. |
+| `GEMINI_API_KEY` | tidak | Tanpa kunci, foto Buku KIA dibaca di perangkat dengan Tesseract. Kunci gratis dari Google AI Studio. |
 | `GEMINI_MODEL` | tidak | Default `gemini-2.5-flash`. |
+| `NEXT_PUBLIC_URL_APK` | tidak | Tautan unduhan APK MOMCARE Ibu; bila diisi, tautan unduh muncul di tab Ibu pada layar masuk. |
 
 ### Deploy (Vercel)
 
@@ -142,7 +184,7 @@ npm run cek                  # cetak hasil mesin peringatan untuk data demo
 
 ## Akun demo
 
-Buka `/masuk` lalu pilih akun (tanpa kata sandi; data demo fiktif dan tersimpan di browser Anda). Tombol **Kembalikan data demo** mengatur ulang semuanya.
+Buka `/masuk` lalu pilih akun (tanpa kata sandi; data demo fiktif dan tersimpan di browser Anda). Akun ibu juga tersedia di aplikasi MOMCARE Ibu (tekan **Masuk**), dengan data yang tersimpan di HP. Tombol **Kembalikan data demo** mengatur ulang semuanya.
 
 | Akun | Peran | Yang bisa dicoba |
 | --- | --- | --- |
@@ -165,7 +207,7 @@ Mesin peringatan **tidak** memakai AI: seluruhnya aturan deterministik yang dapa
 
 ## Catatan & keterbatasan
 
-- MVP ini *local-first*: data tersimpan di `localStorage` browser masing-masing. Untuk produksi, `store.ts` dapat diganti dengan backend (mis. Supabase/Postgres dengan Row Level Security yang mencerminkan `akses.ts`).
+- MVP ini *local-first*: data tersimpan di `localStorage` browser (web) dan AsyncStorage HP (aplikasi Ibu). **Keduanya belum tersambung**: isian ibu di aplikasi HP belum terlihat oleh petugas di web, dan sebaliknya. Untuk produksi, `store.ts` dapat diganti dengan backend bersama (mis. Supabase/Postgres dengan Row Level Security yang mencerminkan `akses.ts`).
 - Beberapa level peringatan mengikuti kamus data bila berbeda dengan bagian 5b spesifikasi (mis. BBLR dan tripel eliminasi reaktif = **Merah**).
 - Aturan klinis adalah alat bantu skrining, bukan pengganti penilaian tenaga kesehatan.
 
@@ -175,4 +217,4 @@ Mesin peringatan **tidak** memakai AI: seluruhnya aturan deterministik yang dapa
 - Ilustrasi di `public/kia/` dipotong dari PDF Buku KIA 2024 (Kemenkes RI) untuk materi edukasi, tanda bahaya, lembar pemantauan, dan potret akun demo; hak cipta ilustrasi tetap milik Kemenkes RI dan sumbernya dicantumkan di aplikasi.
 - Rekomendasi anemia kehamilan merujuk WHO (2024) sebagaimana dicantumkan di spesifikasi tim.
 - Ikon: [Lucide](https://lucide.dev) (ISC). Font: Plus Jakarta Sans (SIL OFL) via `next/font`.
-- Pustaka open-source: Next.js, React, Tailwind CSS, zustand, motion, recharts, sonner, Radix UI, date-fns, @google/genai (lisensi masing-masing).
+- Pustaka open-source: Expo, React Native, Reanimated, Gesture Handler, react-native-svg, Next.js, React, Tailwind CSS, zustand, motion, recharts, sonner, Radix UI, date-fns, @google/genai (lisensi masing-masing).

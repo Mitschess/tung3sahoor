@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { bolehIsi, bolehOcr, bolehTutupPeringatan } from "./akses";
 import { kamus, validasiNilai } from "./kamus";
+import { penyimpanan } from "./penyimpanan";
 import { PENGGUNA_DEMO, VERSI_PERSETUJUAN, buatSeed } from "./seed";
 import type { Catatan, Data, DrafOcr, Ibu, LogPengingat, Meta, Pengguna, StatusPeringatan } from "./types";
 import { hashNik, samarkanNik, uid } from "./util";
@@ -236,7 +237,7 @@ export const useStore = create<State>()(
     {
       name: "momcare-demo",
       version: VERSI_DATA,
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(penyimpanan),
       partialize: (s) => ({
         versi: s.versi,
         penggunaId: s.penggunaId,
@@ -250,8 +251,8 @@ export const useStore = create<State>()(
       }),
       migrate: () => ({}) as unknown as State,
       onRehydrateStorage: () => () => {
-        // Hidrasi localStorage berjalan sinkron di dalam create(), saat `useStore` belum terdefinisi:
-        // lanjutkan pada tick berikutnya. Data rusak/versi lama → isi ulang data demo.
+        // Hidrasi localStorage berjalan sinkron di dalam create(), saat `useStore` belum terdefinisi
+        // (di aplikasi Android, AsyncStorage berjalan asinkron): lanjutkan pada tick berikutnya. Data rusak/versi lama → isi ulang data demo.
         setTimeout(() => {
           const s = useStore.getState();
           if (!s.ibu.length || s.versi !== VERSI_DATA) s.resetDemo();

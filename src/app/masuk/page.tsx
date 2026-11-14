@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { ArrowLeft, ChevronRight, Download, RotateCcw, Smartphone } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
@@ -16,6 +16,9 @@ import { cn } from "@/lib/util";
 import type { NamaGambar } from "@/data/gambar-kia";
 
 type Kelompok = "ibu" | "petugas";
+
+/** Tautan unduhan APK aplikasi Android MOMCARE Ibu (opsional, folder mobile/). */
+const URL_APK = process.env.NEXT_PUBLIC_URL_APK;
 
 /** Potret akun demo: potongan ilustrasi Buku KIA (bukan foto orang sungguhan). */
 function potret(u: Pengguna): NamaGambar {
@@ -88,6 +91,16 @@ function MasukIsi() {
             );
           })}
         </div>
+        {kelompok === "ibu" && URL_APK && (
+          <a href={URL_APK} className="mt-3 flex items-center gap-3 rounded-2xl border border-line bg-surface/70 p-4 text-sm transition active:scale-[0.99]">
+            <Smartphone className="size-5 shrink-0 text-brand" />
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold">Pakai HP Android?</span>
+              <span className="block text-muted">Unduh aplikasi MOMCARE Ibu (APK)</span>
+            </span>
+            <Download className="size-5 shrink-0 text-brand" />
+          </a>
+        )}
         <div className="mt-auto pt-10 text-center text-sm text-muted">
           <p>Akun demo tanpa kata sandi. Semua data fiktif dan hanya tersimpan di browser ini.</p>
           <button
