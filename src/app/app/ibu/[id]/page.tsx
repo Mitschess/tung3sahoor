@@ -10,7 +10,7 @@ import { DaftarPeringatan } from "@/components/peringatan";
 import { RiwayatTabel } from "@/components/riwayat";
 import { DaftarJadwal, KartuTahap } from "@/components/tahap";
 import { TombolWa, perluSegera } from "@/components/tombol-wa";
-import { Baris, JudulBagian, Kartu, Kosong, LABEL_LEVEL, Lencana, Memuat, Tab, TautanTombol } from "@/components/ui";
+import { Baris, JudulBagian, Kartu, Kosong, LABEL_LEVEL, Lencana, Memuat, Modal, Tab, TautanTombol, Tombol } from "@/components/ui";
 import { bolehIsi, bolehLihatSensitif, bolehOcr } from "@/lib/akses";
 import { useRingkasan } from "@/lib/hooks";
 import { kamus } from "@/lib/kamus";
@@ -38,6 +38,7 @@ export default function DetailIbu() {
   const u = usePengguna();
   const r = useRingkasan(id);
   const [tab, setTab] = useState<TabNama>("ringkasan");
+  const [catat, setCatat] = useState(false);
   const kembali = useKembali("/app/ibu");
   if (!r) return <Kosong judul="Ibu tidak ditemukan atau di luar wilayah Anda" teks="Kader hanya bisa melihat ibu di wilayah posyandunya." />;
   if (!u) return <Memuat />;
@@ -50,6 +51,7 @@ export default function DetailIbu() {
   const sisaForm = daftarForm.filter((t) => t !== tempo?.tabel);
   const formUtama = sisaForm.filter((t) => FORM_UTAMA.includes(t));
   const formLain = sisaForm.filter((t) => !FORM_UTAMA.includes(t));
+  const bisaCatat = !!tempo || sisaForm.length > 0;
   const jadwalBelum = r.jadwal.filter((k) => k.status !== "selesai");
   const jadwalSelesai = r.jadwal.filter((k) => k.status === "selesai");
   const tautanForm = (t: string) => (
@@ -92,13 +94,18 @@ export default function DetailIbu() {
           </div>
           <div className="sm:text-right">
             <div className="flex flex-wrap gap-2 sm:justify-end">
-              <TombolWa r={r} ke="ibu" jenis="otomatis" />
-              <TombolWa r={r} ke="pendamping" jenis="otomatis" />
-              {bolehOcr(u) && (
+              {/* Aksi utama halaman ini: selalu di atas, di semua tab, tidak tenggelam di bawah peringatan. */}
+              {bisaCatat ? (
+                <Tombol kecil onClick={() => setCatat(true)}>
+                  <ClipboardPlus className="size-4" /> Catat pemeriksaan
+                </Tombol>
+              ) : bolehOcr(u) ? (
                 <TautanTombol href={`/app/foto?ibu=${r.ibu.id}`} kecil>
                   <Camera className="size-4" /> Foto Buku KIA
                 </TautanTombol>
-              )}
+              ) : null}
+              <TombolWa r={r} ke="ibu" jenis="otomatis" />
+              <TombolWa r={r} ke="pendamping" jenis="otomatis" />
             </div>
             {/* Satu tempat untuk WhatsApp; isi pesannya mengikuti status ibu dan tidak pernah memuat hasil pemeriksaan. */}
             <p className="mt-1.5 text-xs text-muted">Pesan WA: {perluSegera(r) ? "ajakan segera periksa ke bidan" : "pengingat jadwal periksa"}</p>
@@ -132,35 +139,6 @@ export default function DetailIbu() {
               <JudulBagian>Peringatan</JudulBagian>
               <DaftarPeringatan r={r} />
             </section>
-            {(tempo || sisaForm.length > 0) && (
-              <section>
-                <JudulBagian>Catat pemeriksaan</JudulBagian>
-                {tempo && (
-                  <Link href={`/app/ibu/${r.ibu.id}/isi/${tempo.tabel}`} className="mb-2.5 flex items-center gap-3 rounded-2xl bg-brand p-4 text-white transition hover:bg-brand-ink">
-                    <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white/20">
-                      <CalendarClock className="size-5" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-xs font-semibold text-white/85">{tempo.status === "terlambat" ? "Terlambat, isi bila sudah diperiksa" : "Jatuh tempo sekarang"}</span>
-                      <span className="block truncate font-bold">{tempo.nama}</span>
-                      <span className="block text-xs text-white/85">
-                        {tgl(tempo.mulai)} – {tgl(tempo.selesai)} · Buku KIA hlm. {tempo.halamanCetak}
-                      </span>
-                    </span>
-                    <ChevronRight className="size-5 shrink-0" />
-                  </Link>
-                )}
-                {formUtama.length > 0 && <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">{formUtama.map(tautanForm)}</div>}
-                {formLain.length > 0 && (
-                  <details className="group mt-2" open={formUtama.length === 0 && !tempo}>
-                    <summary className="flex h-10 cursor-pointer list-none items-center gap-1.5 rounded-lg px-1 text-sm font-semibold text-brand [&::-webkit-details-marker]:hidden">
-                      <ChevronRight className="size-4 transition group-open:rotate-90" /> Form lain ({formLain.length})
-                    </summary>
-                    <div className="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-3">{formLain.map(tautanForm)}</div>
-                  </details>
-                )}
-              </section>
-            )}
           </div>
           <div className="space-y-6">
             <KartuTahap t={r.tahap} petugas />
@@ -216,6 +194,39 @@ export default function DetailIbu() {
           {TABEL_PANTAU.some((t) => r.cari(t).length) ? TABEL_PANTAU.map((t) => <RiwayatTabel key={t} tabel={t} catatan={r.cari(t)} />) : <Kosong judul="Ibu belum mengisi lembar pemantauan" teks="Kirim pengingat lewat WhatsApp agar ibu mengisi pemantauan mingguan/harian." />}
         </div>
       )}
+
+      <Modal buka={catat} setBuka={setCatat} judul="Catat pemeriksaan" deskripsi={`${String(p.nama)} · ${tahapSingkat(r)}`} lebar="max-w-xl">
+        {tempo && (
+          <Link href={`/app/ibu/${r.ibu.id}/isi/${tempo.tabel}`} className="mb-4 flex items-center gap-3 rounded-2xl bg-brand p-4 text-white transition hover:bg-brand-ink">
+            <CalendarClock className="size-5 shrink-0" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-xs font-semibold text-white/85">{tempo.status === "terlambat" ? "Terlambat, isi bila sudah diperiksa" : "Jatuh tempo sekarang"}</span>
+              <span className="block font-bold leading-snug">{tempo.nama}</span>
+              <span className="block text-xs text-white/85">
+                {tgl(tempo.mulai)} – {tgl(tempo.selesai)} · Buku KIA hlm. {tempo.halamanCetak}
+              </span>
+            </span>
+            <ChevronRight className="size-5 shrink-0" />
+          </Link>
+        )}
+        {formUtama.length > 0 && <div className="grid gap-2 sm:grid-cols-2">{formUtama.map(tautanForm)}</div>}
+        {formLain.length > 0 && (
+          <>
+            {(formUtama.length > 0 || tempo) && <p className="mb-2 mt-4 text-xs font-semibold text-muted">Form lain</p>}
+            <div className="grid gap-2 sm:grid-cols-2">{formLain.map(tautanForm)}</div>
+          </>
+        )}
+        {bolehOcr(u) && (
+          <Link href={`/app/foto?ibu=${r.ibu.id}`} className="mt-4 flex items-center gap-3 border-t border-line pt-4 text-sm transition hover:text-brand">
+            <Camera className="size-5 shrink-0 text-brand" />
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold">Isi dari foto Buku KIA</span>
+              <span className="block text-xs text-muted">Foto halamannya, isian dibaca otomatis lalu Anda cek.</span>
+            </span>
+            <ChevronRight className="size-4 shrink-0 text-muted" />
+          </Link>
+        )}
+      </Modal>
 
       {tab === "identitas" && (
         <div className="grid gap-4 lg:grid-cols-2">
