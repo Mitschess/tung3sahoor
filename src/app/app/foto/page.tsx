@@ -108,7 +108,7 @@ function ItemDraf({ d, nama }: { d: DrafOcr; nama: string }) {
  * Membaca foto dengan mesin yang tersedia: Gemini di server bila ada kuncinya, selain itu Tesseract di perangkat.
  * Bila Gemini gagal, foto tetap dibaca di perangkat supaya petugas tidak perlu mengulang.
  */
-async function bacaFoto(foto: string, tabel: string, ke: string, padaProses: (p: number) => void): Promise<Pick<DrafOcr, "hasil" | "yakin" | "mode" | "model">> {
+async function bacaFoto(foto: string, tabel: string, ke: string, padaProses: (p: number) => void): Promise<Pick<DrafOcr, "hasil" | "yakin" | "mode" | "model"> & { saran?: string }> {
   const mesin = await fetch("/api/ocr")
     .then((r) => r.json())
     .then((j: { mesin?: string }) => j.mesin)
@@ -125,8 +125,8 @@ async function bacaFoto(foto: string, tabel: string, ke: string, padaProses: (p:
   }
   try {
     const { bacaDiPerangkat } = await import("@/lib/ocr-lokal");
-    const { hasil, yakin } = await bacaDiPerangkat(foto, tabel, ke, padaProses);
-    return { hasil: hasil as DrafOcr["hasil"], yakin, mode: "tesseract", model: "Tesseract" };
+    const { hasil, yakin, saran } = await bacaDiPerangkat(foto, tabel, ke, padaProses);
+    return { hasil: hasil as DrafOcr["hasil"], yakin, mode: "tesseract", model: "Tesseract", saran };
   } catch {
     throw new Error("Foto tidak bisa dibaca di perangkat ini. Periksa koneksi internet, atau isi manual.");
   }
@@ -191,6 +191,8 @@ function Unggah({ rs, ibuAwal }: { rs: Ringkasan[]; ibuAwal?: string }) {
     setProses("baca");
     try {
       const json = await bacaFoto(foto, tabel, ke, setPersen);
+      // Kolom kunjungan yang dipilih kosong di foto: jangan buat draf kosong, minta petugas memilih kolom yang benar.
+      if (json.saran && Object.keys(json.hasil).length <= 1) return void toast.warning(json.saran, { duration: 12000 });
       // Simpan miniatur yang lebih kecil untuk perbandingan saat konfirmasi (hemat penyimpanan perangkat).
       const mini = await kompres(await (await fetch(foto)).blob(), 1100, 0.7);
       const d = tambahDraf({ ibuId: r.ibu.id, tabel, fotoDataUrl: mini, hasil: json.hasil ?? {}, yakin: json.yakin ?? {}, mode: json.mode, model: json.model });
